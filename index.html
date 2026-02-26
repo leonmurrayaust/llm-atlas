@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Intelligence Atlas — The Definitive Benchmark Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --surface: #0a0f1e;
+  --surface2: #0f1628;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(99,179,237,0.3);
+  --text: #e8edf8;
+  --text-dim: #6b7a99;
+  --text-muted: #3a4460;
+  --accent: #63b3ed;
+  --accent2: #f6ad55;
+  --accent3: #68d391;
+  --accent4: #fc8181;
+  --pareto: #f6ad55;
+  --grid: rgba(255,255,255,0.03);
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* HEADER */
+header {
+  position: relative;
+  padding: 2rem 3rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: linear-gradient(180deg, rgba(99,179,237,0.04) 0%, transparent 100%);
+}
+
+.logo-block h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: linear-gradient(135deg, #e8edf8 0%, #63b3ed 50%, #f6ad55 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-block .tagline {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent3);
+  border: 1px solid rgba(104,211,145,0.3);
+  padding: 0.3rem 0.7rem;
+  border-radius: 2px;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--accent3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(0.8); }
+}
+
+.stat-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-dim);
+  background: var(--surface);
+}
+
+.chip span { color: var(--accent); font-weight: 600; }
+
+/* SEARCH BAR */
+.search-bar-wrap {
+  padding: 1rem 3rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.search-input-wrap svg {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  width: 14px; height: 14px;
+}
+
+#searchInput {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.6rem 0.8rem 0.6rem 2.2rem;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 0.05em;
+}
+
+#searchInput:focus { border-color: var(--accent); }
+#searchInput::placeholder { color: var(--text-muted); }
+
+.filter-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-dim);
+  background: transparent;
+  font-family: var(--font-mono);
+}
+
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.pill.free-active { background: var(--accent3); color: var(--bg); border-color: var(--accent3); }
+
+/* TIMELINE */
+.timeline-section {
+  padding: 1.2rem 3rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.timeline-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.timeline-epoch {
+  font-size: 0.7rem;
+  color: var(--accent2);
+  font-weight: 600;
+}
+
+#timelineSlider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 2px;
+  background: var(--border);
+  outline: none;
+  border-radius: 2px;
+  position: relative;
+}
+
+#timelineSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--accent2);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(246,173,85,0.5);
+}
+
+.timeline-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.tick {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.tick:hover, .tick.active { color: var(--accent2); }
+
+/* TABS */
+.tabs-wrap {
+  padding: 0.8rem 3rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0;
+}
+
+.tab {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.tab:hover { color: var(--text-dim); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* MAIN CONTENT */
+.main { padding: 2rem 3rem; position: relative; }
+
+/* SCATTER CONTROLS */
+.scatter-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.axis-select-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.axis-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+
+select:focus { border-color: var(--accent); }
+
+.toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: var(--surface);
+  transition: all 0.15s;
+}
+
+.toggle-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.toggle-btn.on { background: rgba(246,173,85,0.1); border-color: var(--accent2); color: var(--accent2); }
+
+/* SCATTER CANVAS AREA */
+.scatter-wrap {
+  position: relative;
+  width: 100%;
+}
+
+#scatterCanvas {
+  width: 100%;
+  display: block;
+  cursor: crosshair;
+}
+
+/* TOOLTIP */
+#tooltip {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  padding: 1rem;
+  width: 280px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+#tooltip.visible { opacity: 1; pointer-events: auto; }
+
+.tt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.tt-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.tt-maker {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.tt-badge {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.tt-badge.free { color: var(--accent3); border-color: rgba(104,211,145,0.4); background: rgba(104,211,145,0.08); }
+.tt-badge.paid { color: var(--accent4); border-color: rgba(252,129,129,0.4); background: rgba(252,129,129,0.08); }
+.tt-badge.pareto { color: var(--accent2); border-color: rgba(246,173,85,0.4); background: rgba(246,173,85,0.08); margin-left: 4px; }
+
+.tt-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tt-stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  border-radius: 2px;
+}
+
+.tt-stat-label {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tt-stat-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 0.15rem;
+}
+
+.tt-bars { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.tt-bar-row { display: flex; align-items: center; gap: 0.5rem; }
+
+.tt-bar-label {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  width: 70px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.tt-bar-track {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tt-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.tt-bar-val {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  width: 35px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tt-api-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: rgba(99,179,237,0.06);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+
+.tt-api-btn:hover { background: rgba(99,179,237,0.15); }
+.tt-api-btn.free-btn { border-color: var(--accent3); color: var(--accent3); background: rgba(104,211,145,0.06); }
+.tt-api-btn.free-btn:hover { background: rgba(104,211,145,0.15); }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  font-weight: 400;
+}
+
+thead th:hover { color: var(--accent); }
+thead th.sort-asc::after { content: ' ↑'; color: var(--accent); }
+thead th.sort-desc::after { content: ' ↓'; color: var(--accent); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  cursor: pointer;
+}
+
+tbody tr:hover { background: var(--surface); }
+tbody tr.dimmed { opacity: 0.2; }
+tbody tr.highlighted { background: rgba(99,179,237,0.05); }
+
+tbody td {
+  padding: 0.6rem 0.8rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.rank-cell {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  width: 30px;
+}
+
+.model-name-cell {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.72rem;
+}
+
+.maker-cell {
+  color: var(--text-dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+}
+
+.score-cell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.score-bar-cell { width: 80px; }
+
+.inline-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.inline-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.badge-sm {
+  font-size: 0.5rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  border: 1px solid;
+}
+
+.badge-sm.free { color: var(--accent3); border-color: rgba(104,211,145,0.3); }
+.badge-sm.paid { color: var(--text-muted); border-color: var(--border); }
+.badge-sm.pareto-badge { color: var(--accent2); border-color: rgba(246,173,85,0.3); }
+
+/* RADAR */
+.radar-wrap {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+#radarCanvas { width: 100%; display: block; }
+
+.radar-controls { padding: 1rem; }
+
+.radar-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.radar-model-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.radar-model-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.radar-model-item:hover { border-color: var(--accent); }
+.radar-model-item.selected { border-color: currentColor; background: rgba(255,255,255,0.03); }
+
+.radar-color-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.remove-btn {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.remove-btn:hover { color: var(--accent4); }
+
+/* BAR CATEGORY */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.category-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.category-card-header {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.category-card-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.category-card-desc {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bar-list { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.bar-item { display: flex; align-items: center; gap: 0.6rem; }
+
+.bar-rank {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  width: 16px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bar-name {
+  font-size: 0.65rem;
+  color: var(--text);
+  width: 130px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bar-val {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* API MODAL */
+#apiModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,8,16,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#apiModal.open { display: flex; }
+
+.modal-box {
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-model-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modal-maker {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.modal-section-title {
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.provider-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.provider-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.provider-card:hover { border-color: var(--accent); background: rgba(99,179,237,0.04); }
+.provider-card.free-provider:hover { border-color: var(--accent3); background: rgba(104,211,145,0.04); }
+
+.provider-info { flex: 1; }
+
+.provider-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.provider-desc {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+
+.provider-price {
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.provider-price.free-price { color: var(--accent3); }
+.provider-price.paid-price { color: var(--accent2); }
+
+.code-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1rem;
+  font-size: 0.65rem;
+  color: var(--accent);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.6;
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.5rem; right: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--surface);
+  transition: all 0.15s;
+}
+
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* LEGEND */
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.legend-item:hover { color: var(--text); }
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-line {
+  width: 20px; height: 2px;
+  background: var(--pareto);
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+/* HIDDEN */
+.view { display: none; }
+.view.active { display: block; }
+
+/* PERMALINK TOAST */
+#toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  color: var(--accent);
+  padding: 0.6rem 1.2rem;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 3000;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+  header, .search-bar-wrap, .timeline-section, .tabs-wrap, .main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .radar-wrap { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast">🔗 Permalink copied to clipboard</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-block">
+    <h1>LLM Intelligence Atlas</h1>
+    <div class="tagline">The Definitive Benchmark Index — Feb 2026 — v2.0</div>
+  </div>
+  <div class="header-meta">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Data: Feb 2026
+    </div>
+    <div class="stat-chips">
+      <div class="chip"><span id="modelCount">33</span> Models</div>
+      <div class="chip"><span>10</span> Benchmarks</div>
+      <div class="chip"><span id="paretoCount">0</span> Pareto-Optimal</div>
+      <div class="chip"><span id="freeCount">0</span> Free</div>
+    </div>
+    <button class="toggle-btn" id="permalinkBtn" onclick="copyPermalink()">⬡ Share</button>
+  </div>
+</header>
+
+<!-- SEARCH + FILTERS -->
+<div class="search-bar-wrap">
+  <div class="search-input-wrap">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search models, makers..." oninput="onSearch()">
+  </div>
+  <div class="filter-pills">
+    <button class="pill active" onclick="setFilter('all', this)">All</button>
+    <button class="pill" onclick="setFilter('free', this)">Free / Open</button>
+    <button class="pill" onclick="setFilter('paid', this)">Paid Only</button>
+    <button class="pill" onclick="setFilter('open', this)">Open Weights</button>
+    <button class="pill" onclick="setFilter('pareto', this)">⬡ Pareto Only</button>
+  </div>
+</div>
+
+<!-- TIMELINE SLIDER -->
+<div class="timeline-section">
+  <div class="timeline-header">
+    <div class="timeline-label">🎬 Timeline — AI Race History</div>
+    <div class="timeline-epoch" id="epochLabel">All Models (Feb 2026)</div>
+  </div>
+  <input type="range" id="timelineSlider" min="0" max="9" value="9" oninput="onTimeline(this.value)">
+  <div class="timeline-ticks" id="timelineTicks"></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <button class="tab active" onclick="setView('scatter', this)">◈ Intelligence × Speed</button>
+  <button class="tab" onclick="setView('table', this)">≡ Rankings Table</button>
+  <button class="tab" onclick="setView('radar', this)">◎ Radar Compare</button>
+  <button class="tab" onclick="setView('bars', this)">▦ By Category</button>
+</div>
+
+<!-- VIEWS -->
+<div class="main">
+
+  <!-- SCATTER VIEW -->
+  <div class="view active" id="view-scatter">
+    <div class="scatter-controls">
+      <div class="axis-select-group">
+        <span class="axis-label">X Axis</span>
+        <select id="xAxis" onchange="renderScatter()">
+          <option value="speed">Output Speed (tok/s)</option>
+          <option value="costPer1M">Cost ($/1M tokens)</option>
+          <option value="context">Context Window (K)</option>
+          <option value="gpqa">GPQA Diamond</option>
+          <option value="mmluPro">MMLU-Pro</option>
+          <option value="humanEval">HumanEval</option>
+          <option value="math">MATH-500</option>
+          <option value="swe">SWE-bench</option>
+          <option value="qualityPerDollar">Quality/Dollar</option>
+        </select>
+      </div>
+      <div class="axis-select-group">
+        <span class="axis-label">Y Axis</span>
+        <select id="yAxis" onchange="renderScatter()">
+          <option value="intelligence" selected>Intelligence Index</option>
+          <option value="gpqa">GPQA Diamond</option>
+          <option value="mmluPro">MMLU-Pro</option>
+          <option value="humanEval">HumanEval</option>
+          <option value="math">MATH-500</option>
+          <option value="swe">SWE-bench</option>
+          <option value="aime">AIME 2025</option>
+          <option value="qualityPerDollar">Quality/Dollar</option>
+        </select>
+      </div>
+      <div class="axis-select-group">
+        <span class="axis-label">Color By</span>
+        <select id="colorBy" onchange="renderScatter()">
+          <option value="maker">Maker</option>
+          <option value="tier">Tier</option>
+          <option value="free">Free/Paid</option>
+          <option value="pareto">Pareto Status</option>
+        </select>
+      </div>
+      <button class="toggle-btn" id="paretoToggle" onclick="togglePareto()">⬡ Pareto Frontier: ON</button>
+    </div>
+    <div class="scatter-wrap">
+      <canvas id="scatterCanvas"></canvas>
+    </div>
+    <div class="legend" id="scatterLegend"></div>
+  </div>
+
+  <!-- TABLE VIEW -->
+  <div class="view" id="view-table">
+    <div class="table-wrap">
+      <table id="rankTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable('rank')">#</th>
+            <th onclick="sortTable('name')">Model</th>
+            <th onclick="sortTable('maker')">Maker</th>
+            <th onclick="sortTable('intelligence')">Intel.</th>
+            <th onclick="sortTable('gpqa')">GPQA</th>
+            <th onclick="sortTable('mmluPro')">MMLU-P</th>
+            <th onclick="sortTable('humanEval')">Code</th>
+            <th onclick="sortTable('math')">Math</th>
+            <th onclick="sortTable('swe')">SWE</th>
+            <th onclick="sortTable('aime')">AIME</th>
+            <th onclick="sortTable('speed')">Speed</th>
+            <th onclick="sortTable('costPer1M')">$/1M</th>
+            <th onclick="sortTable('qualityPerDollar')">Q/$</th>
+            <th>Status</th>
+            <th>API</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RADAR VIEW -->
+  <div class="view" id="view-radar">
+    <div class="radar-wrap">
+      <canvas id="radarCanvas"></canvas>
+      <div class="radar-controls">
+        <div class="radar-title">Compare Models (max 5)</div>
+        <div class="radar-model-list" id="radarModelList"></div>
+        <div style="margin-top:1rem">
+          <div class="radar-title">Add Model</div>
+          <select id="radarAddSelect" style="width:100%;margin-top:0.4rem" onchange="addRadarModel(this.value)">
+            <option value="">— select model —</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARS VIEW -->
+  <div class="view" id="view-bars">
+    <div class="category-grid" id="categoryGrid"></div>
+  </div>
+
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"></div>
+
+<!-- API MODAL -->
+<div id="apiModal">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA — 33 MODELS WITH COMPREHENSIVE BENCHMARK DATA
+// ============================================================
+
+const EPOCHS = [
+  { label: 'Mar 2023', date: '2023-03', desc: 'GPT-4 Era Begins' },
+  { label: 'Jun 2023', date: '2023-06', desc: 'Claude 2 / Llama 2' },
+  { label: 'Oct 2023', date: '2023-10', desc: 'GPT-4 Turbo' },
+  { label: 'Feb 2024', date: '2024-02', desc: 'Gemini 1.5 Pro' },
+  { label: 'May 2024', date: '2024-05', desc: 'GPT-4o Launch' },
+  { label: 'Aug 2024', date: '2024-08', desc: 'Llama 3.1 / Claude 3.5 Sonnet' },
+  { label: 'Nov 2024', date: '2024-11', desc: 'o1 / Gemini 2' },
+  { label: 'Jan 2025', date: '2025-01', desc: 'DeepSeek R1 Shock' },
+  { label: 'May 2025', date: '2025-05', desc: 'Llama 4 / Gemini 2.5 Pro' },
+  { label: 'Feb 2026', date: '2026-02', desc: 'Full Frontier' },
+];
+
+const MAKER_COLORS = {
+  'Google': '#4285f4',
+  'Anthropic': '#d97706',
+  'OpenAI': '#10b981',
+  'xAI': '#8b5cf6',
+  'Meta': '#3b82f6',
+  'DeepSeek': '#06b6d4',
+  'Mistral': '#f59e0b',
+  'Alibaba': '#ef4444',
+  'Microsoft': '#0ea5e9',
+  'NVIDIA': '#22c55e',
+  'IBM': '#6366f1',
+  'Inception': '#ec4899',
+};
+
+const TIER_COLORS = { 'Frontier': '#63b3ed', 'Strong': '#68d391', 'Capable': '#f6ad55', 'Efficient': '#fc8181' };
+
+// Full model dataset
+const MODELS = [
+  // id, name, maker, releaseDate, intelligence, gpqa, mmluPro, humanEval, math, swe, aime, arenaElo, speed, context, costInput, costOutput, isFree, openWeights, freeVia, apiUrl, tier
+  { id:'gemini-25-pro', name:'Gemini 2.5 Pro', maker:'Google', releaseDate:'2025-05', intelligence:62, gpqa:84.0, mmluPro:79.1, humanEval:90.2, math:91.8, swe:63.8, aime:86.7, arenaElo:1380, speed:148, context:1000, costInput:1.25, costOutput:5.0, isFree:true, openWeights:false, freeVia:'Google AI Studio', apiUrl:'https://aistudio.google.com', tier:'Frontier' },
+  { id:'o3', name:'o3', maker:'OpenAI', releaseDate:'2025-04', intelligence:61, gpqa:87.7, mmluPro:82.9, humanEval:91.6, math:97.9, swe:71.7, aime:91.6, arenaElo:1385, speed:62, context:200, costInput:10.0, costOutput:40.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Frontier' },
+  { id:'claude-opus-45', name:'Claude Opus 4.5', maker:'Anthropic', releaseDate:'2025-06', intelligence:60, gpqa:82.1, mmluPro:80.3, humanEval:88.4, math:89.2, swe:80.9, aime:84.5, arenaElo:1370, speed:89, context:200, costInput:15.0, costOutput:75.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.anthropic.com', tier:'Frontier' },
+  { id:'grok-4', name:'Grok 4.1', maker:'xAI', releaseDate:'2025-07', intelligence:59, gpqa:83.5, mmluPro:81.0, humanEval:89.7, math:92.1, swe:65.2, aime:88.9, arenaElo:1362, speed:78, context:2000, costInput:5.0, costOutput:15.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.x.ai', tier:'Frontier' },
+  { id:'gemini-25-flash', name:'Gemini 2.5 Flash', maker:'Google', releaseDate:'2025-05', intelligence:55, gpqa:78.2, mmluPro:76.4, humanEval:87.3, math:86.4, swe:56.1, aime:71.2, arenaElo:1330, speed:412, context:1000, costInput:0.075, costOutput:0.30, isFree:true, openWeights:false, freeVia:'Google AI Studio', apiUrl:'https://aistudio.google.com', tier:'Strong' },
+  { id:'claude-sonnet-46', name:'Claude Sonnet 4.6', maker:'Anthropic', releaseDate:'2025-07', intelligence:54, gpqa:77.8, mmluPro:75.9, humanEval:85.9, math:84.7, swe:72.3, aime:68.4, arenaElo:1325, speed:112, context:200, costInput:3.0, costOutput:15.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.anthropic.com', tier:'Strong' },
+  { id:'gpt-4o', name:'GPT-4o (2025)', maker:'OpenAI', releaseDate:'2025-03', intelligence:53, gpqa:76.6, mmluPro:74.8, humanEval:84.1, math:83.2, swe:54.3, aime:63.1, arenaElo:1315, speed:157, context:128, costInput:2.5, costOutput:10.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Strong' },
+  { id:'deepseek-r1', name:'DeepSeek R1', maker:'DeepSeek', releaseDate:'2025-01', intelligence:53, gpqa:71.5, mmluPro:75.9, humanEval:92.3, math:97.3, swe:49.2, aime:79.8, arenaElo:1305, speed:47, context:128, costInput:0.55, costOutput:2.19, isFree:true, openWeights:true, freeVia:'OpenRouter :free', apiUrl:'https://openrouter.ai', tier:'Strong' },
+  { id:'llama-4-maverick', name:'Llama 4 Maverick', maker:'Meta', releaseDate:'2025-04', intelligence:52, gpqa:73.2, mmluPro:74.1, humanEval:87.8, math:84.6, swe:45.1, aime:69.3, arenaElo:1298, speed:143, context:1000, costInput:0.27, costOutput:0.85, isFree:true, openWeights:true, freeVia:'Together AI / self-host', apiUrl:'https://together.ai', tier:'Strong' },
+  { id:'qwen3-235b', name:'Qwen3 235B-A22B', maker:'Alibaba', releaseDate:'2025-04', intelligence:52, gpqa:76.1, mmluPro:79.8, humanEval:92.1, math:94.0, swe:52.8, aime:85.7, arenaElo:1302, speed:38, context:128, costInput:0.22, costOutput:0.88, isFree:true, openWeights:true, freeVia:'Hugging Face / self-host', apiUrl:'https://huggingface.co', tier:'Strong' },
+  { id:'o4-mini', name:'o4-mini', maker:'OpenAI', releaseDate:'2025-04', intelligence:51, gpqa:79.2, mmluPro:74.6, humanEval:92.3, math:96.4, swe:63.2, aime:93.4, arenaElo:1312, speed:195, context:128, costInput:1.1, costOutput:4.4, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Strong' },
+  { id:'gemini-2-flash', name:'Gemini 2.0 Flash', maker:'Google', releaseDate:'2025-02', intelligence:48, gpqa:70.1, mmluPro:71.3, humanEval:83.2, math:77.8, swe:48.9, aime:60.2, arenaElo:1280, speed:623, context:1000, costInput:0.10, costOutput:0.40, isFree:true, openWeights:false, freeVia:'Google AI Studio', apiUrl:'https://aistudio.google.com', tier:'Capable' },
+  { id:'deepseek-v3', name:'DeepSeek V3', maker:'DeepSeek', releaseDate:'2024-12', intelligence:47, gpqa:68.4, mmluPro:75.3, humanEval:91.6, math:90.2, swe:42.0, aime:62.7, arenaElo:1265, speed:52, context:128, costInput:0.27, costOutput:1.10, isFree:true, openWeights:true, freeVia:'OpenRouter :free', apiUrl:'https://openrouter.ai', tier:'Capable' },
+  { id:'claude-haiku-45', name:'Claude Haiku 4.5', maker:'Anthropic', releaseDate:'2025-07', intelligence:44, gpqa:62.3, mmluPro:66.8, humanEval:78.4, math:74.1, swe:58.4, aime:48.2, arenaElo:1245, speed:245, context:200, costInput:0.80, costOutput:4.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.anthropic.com', tier:'Capable' },
+  { id:'llama-4-scout', name:'Llama 4 Scout', maker:'Meta', releaseDate:'2025-04', intelligence:43, gpqa:57.2, mmluPro:64.1, humanEval:82.6, math:74.8, swe:38.7, aime:49.2, arenaElo:1238, speed:287, context:10000, costInput:0.11, costOutput:0.34, isFree:true, openWeights:true, freeVia:'Together AI / self-host', apiUrl:'https://together.ai', tier:'Capable' },
+  { id:'mercury-2', name:'Mercury 2 (Diffusion)', maker:'Inception', releaseDate:'2025-08', intelligence:42, gpqa:61.4, mmluPro:67.2, humanEval:84.1, math:76.3, swe:44.2, aime:55.1, arenaElo:1235, speed:1196, context:32, costInput:0.25, costOutput:1.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://inception.ai', tier:'Capable' },
+  { id:'gpt-4o-mini', name:'GPT-4o mini', maker:'OpenAI', releaseDate:'2024-07', intelligence:40, gpqa:53.4, mmluPro:61.8, humanEval:79.3, math:70.2, swe:23.7, aime:37.4, arenaElo:1215, speed:210, context:128, costInput:0.15, costOutput:0.60, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Capable' },
+  { id:'mistral-large', name:'Mistral Large 2', maker:'Mistral', releaseDate:'2024-07', intelligence:41, gpqa:63.1, mmluPro:69.5, humanEval:84.0, math:72.1, swe:35.2, aime:41.2, arenaElo:1230, speed:108, context:128, costInput:2.0, costOutput:6.0, isFree:false, openWeights:true, freeVia:'Self-host', apiUrl:'https://console.mistral.ai', tier:'Capable' },
+  { id:'phi-4', name:'Phi-4 (14B)', maker:'Microsoft', releaseDate:'2024-12', intelligence:39, gpqa:61.3, mmluPro:70.4, humanEval:82.6, math:80.4, swe:28.4, aime:47.2, arenaElo:1220, speed:185, context:16, costInput:0.07, costOutput:0.14, isFree:true, openWeights:true, freeVia:'GitHub Models / HuggingFace', apiUrl:'https://github.com/marketplace/models', tier:'Capable' },
+  { id:'qwen25-72b', name:'Qwen2.5 72B', maker:'Alibaba', releaseDate:'2024-09', intelligence:38, gpqa:59.1, mmluPro:71.1, humanEval:85.7, math:81.6, swe:31.4, aime:43.8, arenaElo:1218, speed:64, context:128, costInput:0.40, costOutput:1.20, isFree:true, openWeights:true, freeVia:'Hugging Face / self-host', apiUrl:'https://huggingface.co', tier:'Capable' },
+  { id:'llama-33-70b', name:'Llama 3.3 70B', maker:'Meta', releaseDate:'2024-12', intelligence:37, gpqa:55.3, mmluPro:68.9, humanEval:83.5, math:76.7, swe:27.2, aime:38.2, arenaElo:1208, speed:129, context:128, costInput:0.23, costOutput:0.69, isFree:true, openWeights:true, freeVia:'Together AI free tier', apiUrl:'https://together.ai', tier:'Capable' },
+  { id:'gemma-3-27b', name:'Gemma 3 27B', maker:'Google', releaseDate:'2025-03', intelligence:36, gpqa:53.2, mmluPro:64.8, humanEval:78.2, math:71.4, swe:22.1, aime:32.4, arenaElo:1198, speed:162, context:128, costInput:0.20, costOutput:0.80, isFree:true, openWeights:true, freeVia:'Google AI Studio / self-host', apiUrl:'https://aistudio.google.com', tier:'Efficient' },
+  { id:'grok-3-mini', name:'Grok 3 Mini', maker:'xAI', releaseDate:'2025-02', intelligence:46, gpqa:71.8, mmluPro:72.1, humanEval:86.4, math:88.2, swe:41.3, aime:70.1, arenaElo:1258, speed:186, context:128, costInput:0.30, costOutput:0.50, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.x.ai', tier:'Capable' },
+  { id:'command-r-plus', name:'Command R+', maker:'Mistral', releaseDate:'2024-04', intelligence:35, gpqa:49.8, mmluPro:62.3, humanEval:74.2, math:57.1, swe:18.4, aime:21.3, arenaElo:1188, speed:142, context:128, costInput:2.50, costOutput:10.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.mistral.ai', tier:'Efficient' },
+  { id:'nemotron-70b', name:'Llama 3.1 Nemotron 70B', maker:'NVIDIA', releaseDate:'2024-10', intelligence:38, gpqa:57.6, mmluPro:69.0, humanEval:82.4, math:74.2, swe:24.3, aime:35.7, arenaElo:1210, speed:88, context:128, costInput:0.20, costOutput:0.65, isFree:true, openWeights:true, freeVia:'NVIDIA NIM free tier', apiUrl:'https://build.nvidia.com', tier:'Capable' },
+  { id:'deepseek-r1-distill-qwen-32b', name:'DeepSeek R1 Distill 32B', maker:'DeepSeek', releaseDate:'2025-01', intelligence:42, gpqa:62.1, mmluPro:68.4, humanEval:88.2, math:90.1, swe:32.1, aime:72.6, arenaElo:1240, speed:95, context:64, costInput:0.14, costOutput:0.55, isFree:true, openWeights:true, freeVia:'OpenRouter / self-host', apiUrl:'https://openrouter.ai', tier:'Capable' },
+  { id:'granite-34b', name:'Granite 3.1 34B', maker:'IBM', releaseDate:'2024-12', intelligence:34, gpqa:48.2, mmluPro:60.1, humanEval:76.4, math:65.3, swe:19.2, aime:24.1, arenaElo:1180, speed:112, context:128, costInput:0.10, costOutput:0.30, isFree:true, openWeights:true, freeVia:'IBM watsonx Lite / self-host', apiUrl:'https://watsonx.ai', tier:'Efficient' },
+  { id:'mistral-nemo', name:'Mistral Nemo 12B', maker:'Mistral', releaseDate:'2024-07', intelligence:32, gpqa:43.4, mmluPro:57.2, humanEval:72.8, math:58.4, swe:16.1, aime:19.2, arenaElo:1172, speed:168, context:128, costInput:0.15, costOutput:0.15, isFree:false, openWeights:true, freeVia:'Self-host', apiUrl:'https://console.mistral.ai', tier:'Efficient' },
+  { id:'qwen25-coder-32b', name:'Qwen2.5 Coder 32B', maker:'Alibaba', releaseDate:'2024-11', intelligence:43, gpqa:55.8, mmluPro:66.3, humanEval:92.7, math:82.3, swe:39.2, aime:44.8, arenaElo:1245, speed:89, context:128, costInput:0.25, costOutput:0.75, isFree:true, openWeights:true, freeVia:'Hugging Face / self-host', apiUrl:'https://huggingface.co', tier:'Capable' },
+  { id:'gpt-4-turbo', name:'GPT-4 Turbo (2024)', maker:'OpenAI', releaseDate:'2023-11', intelligence:45, gpqa:67.8, mmluPro:71.2, humanEval:85.4, math:78.9, swe:38.7, aime:52.3, arenaElo:1260, speed:52, context:128, costInput:10.0, costOutput:30.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Strong' },
+  { id:'gemini-15-pro', name:'Gemini 1.5 Pro', maker:'Google', releaseDate:'2024-02', intelligence:44, gpqa:65.4, mmluPro:69.8, humanEval:82.8, math:76.4, swe:38.4, aime:51.2, arenaElo:1255, speed:96, context:2000, costInput:1.25, costOutput:5.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://aistudio.google.com', tier:'Strong' },
+  { id:'claude-3-opus', name:'Claude 3 Opus', maker:'Anthropic', releaseDate:'2024-03', intelligence:42, gpqa:63.8, mmluPro:67.4, humanEval:80.2, math:73.1, swe:31.2, aime:42.4, arenaElo:1248, speed:32, context:200, costInput:15.0, costOutput:75.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://console.anthropic.com', tier:'Strong' },
+  { id:'gpt-4-orig', name:'GPT-4 (Mar 2023)', maker:'OpenAI', releaseDate:'2023-03', intelligence:38, gpqa:53.2, mmluPro:61.9, humanEval:78.4, math:67.8, swe:24.2, aime:36.4, arenaElo:1220, speed:22, context:32, costInput:30.0, costOutput:60.0, isFree:false, openWeights:false, freeVia:null, apiUrl:'https://platform.openai.com', tier:'Capable' },
+];
+
+// Compute quality per dollar
+MODELS.forEach(m => {
+  const avgCost = (m.costInput + m.costOutput) / 2;
+  m.qualityPerDollar = avgCost > 0 ? parseFloat((m.intelligence / avgCost).toFixed(1)) : 0;
+  m.context_k = m.context;
+});
+
+// ============================================================
+// STATE
+// ============================================================
+
+let state = {
+  filter: 'all',
+  search: '',
+  timelineIdx: 9,
+  showPareto: true,
+  sortCol: 'intelligence',
+  sortDir: 'desc',
+  radarModels: ['gemini-25-pro', 'o3', 'claude-opus-45', 'deepseek-r1'],
+  activeView: 'scatter',
+  hoveredModel: null,
+  lockedModel: null,
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function getActiveModels() {
+  const epoch = EPOCHS[state.timelineIdx];
+  return MODELS.filter(m => {
+    const inEpoch = m.releaseDate <= epoch.date;
+    if (!inEpoch) return false;
+    const q = state.search.toLowerCase();
+    if (q && !m.name.toLowerCase().includes(q) && !m.maker.toLowerCase().includes(q)) return false;
+    if (state.filter === 'free') return m.isFree;
+    if (state.filter === 'paid') return !m.isFree;
+    if (state.filter === 'open') return m.openWeights;
+    if (state.filter === 'pareto') return m.isPareto;
+    return true;
+  });
+}
+
+function computePareto(models, xKey, yKey) {
+  const pts = models.map(m => ({ m, x: getVal(m, xKey), y: getVal(m, yKey) }));
+  pts.forEach(p => p.m.isPareto = false);
+  pts.forEach(p => {
+    const dominated = pts.some(q =>
+      q !== p && q.x >= p.x && q.y >= p.y && (q.x > p.x || q.y > p.y)
+    );
+    if (!dominated) p.m.isPareto = true;
+  });
+  const count = pts.filter(p => p.m.isPareto).length;
+  document.getElementById('paretoCount').textContent = count;
+}
+
+function getVal(m, key) {
+  const MAP = {
+    intelligence: m.intelligence,
+    gpqa: m.gpqa,
+    mmluPro: m.mmluPro,
+    humanEval: m.humanEval,
+    math: m.math,
+    swe: m.swe,
+    aime: m.aime,
+    speed: m.speed,
+    context: m.context_k,
+    costPer1M: m.costInput + m.costOutput,
+    qualityPerDollar: m.qualityPerDollar,
+    arenaElo: m.arenaElo,
+  };
+  return MAP[key] ?? 0;
+}
+
+function getLabel(key) {
+  const L = {
+    intelligence: 'Intelligence Index',
+    gpqa: 'GPQA Diamond (%)',
+    mmluPro: 'MMLU-Pro (%)',
+    humanEval: 'HumanEval (%)',
+    math: 'MATH-500 (%)',
+    swe: 'SWE-bench (%)',
+    aime: 'AIME 2025 (%)',
+    speed: 'Speed (tok/s)',
+    context: 'Context (K tokens)',
+    costPer1M: 'Cost ($/1M tokens)',
+    qualityPerDollar: 'Quality / Dollar',
+    arenaElo: 'Arena ELO',
+  };
+  return L[key] ?? key;
+}
+
+function getColor(m, mode) {
+  if (mode === 'maker') return MAKER_COLORS[m.maker] || '#6b7a99';
+  if (mode === 'tier') return TIER_COLORS[m.tier] || '#6b7a99';
+  if (mode === 'free') return m.isFree ? '#68d391' : '#fc8181';
+  if (mode === 'pareto') return m.isPareto ? '#f6ad55' : '#3a4460';
+  return '#63b3ed';
+}
+
+// ============================================================
+// TIMELINE
+// ============================================================
+
+function initTimeline() {
+  const ticks = document.getElementById('timelineTicks');
+  ticks.innerHTML = EPOCHS.map((e, i) =>
+    `<span class="tick${i === state.timelineIdx ? ' active' : ''}" onclick="setTimeline(${i})">${e.label}</span>`
+  ).join('');
+}
+
+function setTimeline(idx) {
+  state.timelineIdx = idx;
+  document.getElementById('timelineSlider').value = idx;
+  updateEpochLabel();
+  renderCurrentView();
+}
+
+function onTimeline(val) {
+  state.timelineIdx = parseInt(val);
+  updateEpochLabel();
+  document.querySelectorAll('.tick').forEach((t, i) => t.classList.toggle('active', i === state.timelineIdx));
+  renderCurrentView();
+}
+
+function updateEpochLabel() {
+  const e = EPOCHS[state.timelineIdx];
+  document.getElementById('epochLabel').textContent = `${e.label} — ${e.desc}`;
+}
+
+// ============================================================
+// FILTER / SEARCH
+// ============================================================
+
+function setFilter(f, btn) {
+  state.filter = f;
+  document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderCurrentView();
+}
+
+function onSearch() {
+  state.search = document.getElementById('searchInput').value;
+  // update URL state
+  const url = new URL(window.location);
+  if (state.search) url.searchParams.set('q', state.search);
+  else url.searchParams.delete('q');
+  history.replaceState({}, '', url);
+  renderCurrentView();
+}
+
+// ============================================================
+// VIEWS
+// ============================================================
+
+function setView(view, btn) {
+  state.activeView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(`view-${view}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // update URL
+  const url = new URL(window.location);
+  url.searchParams.set('view', view);
+  history.replaceState({}, '', url);
+
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  const active = getActiveModels();
+  document.getElementById('modelCount').textContent = active.length;
+  document.getElementById('freeCount').textContent = active.filter(m => m.isFree).length;
+
+  if (state.activeView === 'scatter') renderScatter();
+  else if (state.activeView === 'table') renderTable();
+  else if (state.activeView === 'radar') renderRadar();
+  else if (state.activeView === 'bars') renderBars();
+}
+
+// ============================================================
+// SCATTER PLOT
+// ============================================================
+
+let scatterDots = [];
+
+function renderScatter() {
+  const canvas = document.getElementById('scatterCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth;
+  const H = Math.max(520, W * 0.55);
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const xKey = document.getElementById('xAxis').value;
+  const yKey = document.getElementById('yAxis').value;
+  const colorMode = document.getElementById('colorBy').value;
+  const models = getActiveModels();
+
+  computePareto(models, xKey, yKey);
+
+  const PAD = { top: 30, right: 30, bottom: 60, left: 70 };
+  const pw = W - PAD.left - PAD.right;
+  const ph = H - PAD.top - PAD.bottom;
+
+  const vals = models.map(m => ({ x: getVal(m, xKey), y: getVal(m, yKey) }));
+  const xs = vals.map(v => v.x);
+  const ys = vals.map(v => v.y);
+  let xMin = Math.min(...xs), xMax = Math.max(...xs);
+  let yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xPad = (xMax - xMin) * 0.08 || 1;
+  const yPad = (yMax - yMin) * 0.08 || 1;
+  xMin -= xPad; xMax += xPad;
+  yMin -= yPad; yMax += yPad;
+
+  const toX = v => PAD.left + ((v - xMin) / (xMax - xMin)) * pw;
+  const toY = v => PAD.top + ph - ((v - yMin) / (yMax - yMin)) * ph;
+
+  // Background
+  ctx.fillStyle = '#050810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = PAD.top + (ph / 5) * i;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    const x = PAD.left + (pw / 5) * i;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + ph); ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#3a4460';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(getLabel(xKey).toUpperCase(), PAD.left + pw / 2, H - 12);
+  ctx.save();
+  ctx.translate(15, PAD.top + ph / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(getLabel(yKey).toUpperCase(), 0, 0);
+  ctx.restore();
+
+  // Axis tick values
+  ctx.fillStyle = '#3a4460';
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 4; i++) {
+    const xV = xMin + (xMax - xMin) * (i / 4);
+    const xP = toX(xV);
+    ctx.fillText(xV > 1000 ? Math.round(xV / 1000) + 'K' : xV.toFixed(xV < 10 ? 1 : 0), xP, PAD.top + ph + 18);
+    const yV = yMin + (yMax - yMin) * (i / 4);
+    const yP = toY(yV);
+    ctx.textAlign = 'right';
+    ctx.fillText(yV.toFixed(0), PAD.left - 8, yP + 4);
+    ctx.textAlign = 'center';
+  }
+
+  // Pareto frontier line
+  if (state.showPareto) {
+    const paretoModels = models.filter(m => m.isPareto)
+      .map(m => ({ x: toX(getVal(m, xKey)), y: toY(getVal(m, yKey)) }))
+      .sort((a, b) => a.x - b.x);
+
+    if (paretoModels.length >= 2) {
+      ctx.strokeStyle = 'rgba(246,173,85,0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      paretoModels.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Pareto label
+      ctx.fillStyle = 'rgba(246,173,85,0.6)';
+      ctx.font = '600 9px JetBrains Mono, monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('— PARETO FRONTIER', PAD.left + 4, PAD.top + 16);
+    }
+  }
+
+  // Dots
+  scatterDots = [];
+  models.forEach(m => {
+    const x = toX(getVal(m, xKey));
+    const y = toY(getVal(m, yKey));
+    const col = getColor(m, colorMode);
+    const r = m.isPareto && state.showPareto ? 7 : 5;
+    const dimmed = state.search && !m.name.toLowerCase().includes(state.search.toLowerCase()) && !m.maker.toLowerCase().includes(state.search.toLowerCase());
+
+    ctx.globalAlpha = dimmed ? 0.15 : (state.lockedModel && state.lockedModel !== m.id ? 0.4 : 1);
+
+    // Pareto glow
+    if (m.isPareto && state.showPareto) {
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 10;
+    }
+
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Pareto ring
+    if (m.isPareto && state.showPareto) {
+      ctx.strokeStyle = 'rgba(246,173,85,0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Label
+    ctx.globalAlpha = dimmed ? 0.1 : (state.lockedModel && state.lockedModel !== m.id ? 0.25 : 0.85);
+    ctx.fillStyle = '#e8edf8';
+    ctx.font = '600 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    const shortName = m.name.length > 16 ? m.name.slice(0, 14) + '…' : m.name;
+    ctx.fillText(shortName, x + r + 3, y + 3);
+
+    ctx.globalAlpha = 1;
+    scatterDots.push({ m, x, y, r: r + 2 });
+  });
+
+  // Legend
+  renderScatterLegend(models, colorMode);
+}
+
+function renderScatterLegend(models, mode) {
+  const legend = document.getElementById('scatterLegend');
+  const seen = new Set();
+  let html = '';
+
+  if (state.showPareto) {
+    html += `<div class="legend-item"><div class="legend-line"></div><span>Pareto Frontier</span></div>`;
+  }
+
+  models.forEach(m => {
+    const key = mode === 'maker' ? m.maker : mode === 'tier' ? m.tier : mode === 'free' ? (m.isFree ? 'Free/Open' : 'Paid') : (m.isPareto ? 'Pareto-Optimal' : 'Standard');
+    if (!seen.has(key)) {
+      seen.add(key);
+      const col = getColor(m, mode);
+      html += `<div class="legend-item"><div class="legend-dot" style="background:${col}"></div><span>${key}</span></div>`;
+    }
+  });
+
+  legend.innerHTML = html;
+}
+
+function togglePareto() {
+  state.showPareto = !state.showPareto;
+  const btn = document.getElementById('paretoToggle');
+  btn.textContent = `⬡ Pareto Frontier: ${state.showPareto ? 'ON' : 'OFF'}`;
+  btn.classList.toggle('on', state.showPareto);
+  renderScatter();
+}
+
+// Scatter interaction
+document.getElementById('scatterCanvas').addEventListener('mousemove', function(e) {
+  if (state.lockedModel) return;
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const hit = scatterDots.find(d => Math.hypot(d.x - mx, d.y - my) < d.r + 4);
+  if (hit) {
+    showTooltip(hit.m, e.clientX, e.clientY);
+    this.style.cursor = 'pointer';
+  } else {
+    hideTooltip();
+    this.style.cursor = 'crosshair';
+  }
+});
+
+document.getElementById('scatterCanvas').addEventListener('click', function(e) {
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const hit = scatterDots.find(d => Math.hypot(d.x - mx, d.y - my) < d.r + 4);
+  if (hit) {
+    state.lockedModel = state.lockedModel === hit.m.id ? null : hit.m.id;
+    if (state.lockedModel) showTooltip(hit.m, e.clientX, e.clientY, true);
+    else hideTooltip();
+    renderScatter();
+  } else {
+    state.lockedModel = null;
+    hideTooltip();
+    renderScatter();
+  }
+});
+
+document.getElementById('scatterCanvas').addEventListener('mouseleave', function() {
+  if (!state.lockedModel) hideTooltip();
+});
+
+// ============================================================
+// TOOLTIP
+// ============================================================
+
+function showTooltip(m, cx, cy, locked = false) {
+  const tt = document.getElementById('tooltip');
+  const paretoTag = m.isPareto ? `<span class="tt-badge pareto">⬡ Pareto</span>` : '';
+  const freeTag = m.isFree ? `<span class="tt-badge free">Free</span>` : `<span class="tt-badge paid">Paid</span>`;
+  const apiLabel = m.isFree ? '⬡ Get Free API Access →' : '→ View API Options';
+  const apiClass = m.isFree ? 'free-btn' : '';
+
+  tt.innerHTML = `
+    <div class="tt-header">
+      <div>
+        <div class="tt-name">${m.name}</div>
+        <div class="tt-maker">${m.maker} · ${m.releaseDate}</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${freeTag}${paretoTag}</div>
+    </div>
+    <div class="tt-stats">
+      <div class="tt-stat"><div class="tt-stat-label">Intelligence</div><div class="tt-stat-value">${m.intelligence}</div></div>
+      <div class="tt-stat"><div class="tt-stat-label">Speed</div><div class="tt-stat-value">${m.speed} t/s</div></div>
+      <div class="tt-stat"><div class="tt-stat-label">Q/Dollar</div><div class="tt-stat-value">${m.qualityPerDollar}</div></div>
+      <div class="tt-stat"><div class="tt-stat-label">Context</div><div class="tt-stat-value">${m.context >= 1000 ? m.context + 'K' : m.context + 'K'}</div></div>
+    </div>
+    <div class="tt-bars">
+      ${[['GPQA', m.gpqa, 100], ['MMLU-Pro', m.mmluPro, 100], ['Code', m.humanEval, 100], ['Math', m.math, 100], ['SWE', m.swe, 100]].map(([l, v, mx]) => `
+        <div class="tt-bar-row">
+          <span class="tt-bar-label">${l}</span>
+          <div class="tt-bar-track"><div class="tt-bar-fill" style="width:${(v/mx*100).toFixed(1)}%"></div></div>
+          <span class="tt-bar-val">${v.toFixed(1)}</span>
+        </div>`).join('')}
+    </div>
+    <button class="tt-api-btn ${apiClass}" onclick="openModal('${m.id}')">${apiLabel}</button>
+    ${locked ? '<div style="font-size:0.55rem;color:var(--text-muted);text-align:center;margin-top:0.4rem;letter-spacing:0.05em">CLICK ANYWHERE TO DISMISS</div>' : ''}
+  `;
+
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+  let left = cx + 16;
+  let top = cy - 10;
+  if (left + 300 > vpW) left = cx - 300;
+  if (top + 400 > vpH) top = vpH - 420;
+  tt.style.left = left + 'px';
+  tt.style.top = top + 'px';
+  tt.classList.add('visible');
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').classList.remove('visible');
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+
+function renderTable() {
+  const models = getActiveModels().sort((a, b) => {
+    let va = getVal(a, state.sortCol) || a[state.sortCol] || 0;
+    let vb = getVal(b, state.sortCol) || b[state.sortCol] || 0;
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    return state.sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  const tbody = document.getElementById('tableBody');
+  const maxIntel = Math.max(...models.map(m => m.intelligence));
+
+  tbody.innerHTML = models.map((m, i) => {
+    const isSearch = state.search && (m.name.toLowerCase().includes(state.search.toLowerCase()) || m.maker.toLowerCase().includes(state.search.toLowerCase()));
+    const dimmed = state.search && !isSearch ? 'dimmed' : (isSearch ? 'highlighted' : '');
+    const paretoTag = m.isPareto ? `<span class="badge-sm pareto-badge">⬡</span> ` : '';
+    const freeTag = m.isFree ? `<span class="badge-sm free">Free</span>` : `<span class="badge-sm paid">Paid</span>`;
+    const cost = (m.costInput + m.costOutput);
+    const costStr = cost === 0 ? 'Free' : '$' + cost.toFixed(2);
+
+    return `<tr class="${dimmed}" onclick="openModal('${m.id}')">
+      <td class="rank-cell">${i + 1}</td>
+      <td class="model-name-cell">${paretoTag}${m.name}</td>
+      <td class="maker-cell">${m.maker}</td>
+      <td class="score-cell" style="color:var(--accent)">${m.intelligence}</td>
+      <td class="score-cell">${m.gpqa.toFixed(1)}</td>
+      <td class="score-cell">${m.mmluPro.toFixed(1)}</td>
+      <td class="score-cell">${m.humanEval.toFixed(1)}</td>
+      <td class="score-cell">${m.math.toFixed(1)}</td>
+      <td class="score-cell">${m.swe.toFixed(1)}</td>
+      <td class="score-cell">${m.aime.toFixed(1)}</td>
+      <td class="score-cell" style="color:var(--accent2)">${m.speed}</td>
+      <td class="score-cell" style="color:var(--text-dim)">${costStr}</td>
+      <td class="score-cell" style="color:var(--accent3)">${m.qualityPerDollar}</td>
+      <td>${freeTag}</td>
+      <td><button class="pill" onclick="event.stopPropagation();openModal('${m.id}')" style="font-size:0.55rem;padding:0.2rem 0.5rem">${m.isFree ? '⬡ Free API' : '→ API'}</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function sortTable(col) {
+  if (state.sortCol === col) {
+    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortCol = col;
+    state.sortDir = 'desc';
+  }
+  document.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+  });
+  renderTable();
+}
+
+// ============================================================
+// RADAR
+// ============================================================
+
+const RADAR_AXES = [
+  { key: 'intelligence', label: 'Intelligence', max: 65 },
+  { key: 'gpqa', label: 'GPQA', max: 90 },
+  { key: 'math', label: 'Math', max: 100 },
+  { key: 'humanEval', label: 'Coding', max: 100 },
+  { key: 'swe', label: 'SWE', max: 85 },
+  { key: 'aime', label: 'AIME', max: 95 },
+  { key: 'qualityPerDollar', label: 'Q/$', max: 200 },
+  { key: 'speed', label: 'Speed', max: 1200 },
+];
+
+const RADAR_COLORS = ['#63b3ed', '#f6ad55', '#68d391', '#fc8181', '#c084fc'];
+
+function renderRadar() {
+  const canvas = document.getElementById('radarCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const size = Math.min(canvas.parentElement.clientWidth - 360, 600);
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2, cy = size / 2;
+  const r = size * 0.38;
+  const n = RADAR_AXES.length;
+
+  ctx.fillStyle = '#050810';
+  ctx.fillRect(0, 0, size, size);
+
+  // Grid rings
+  for (let ring = 1; ring <= 5; ring++) {
+    const rr = r * (ring / 5);
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + rr * Math.cos(a);
+      const y = cy + rr * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Spokes
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Labels
+    const la = 1.12;
+    const lx = cx + r * la * Math.cos(a);
+    const ly = cy + r * la * Math.sin(a);
+    ctx.fillStyle = '#6b7a99';
+    ctx.font = '600 10px JetBrains Mono, monospace';
+    ctx.textAlign = Math.cos(a) > 0.1 ? 'left' : Math.cos(a) < -0.1 ? 'right' : 'center';
+    ctx.textBaseline = Math.sin(a) > 0.1 ? 'top' : Math.sin(a) < -0.1 ? 'bottom' : 'middle';
+    ctx.fillText(RADAR_AXES[i].label.toUpperCase(), lx, ly);
+  }
+
+  // Models
+  state.radarModels.forEach((id, mi) => {
+    const m = MODELS.find(x => x.id === id);
+    if (!m) return;
+    const col = RADAR_COLORS[mi % RADAR_COLORS.length];
+
+    ctx.beginPath();
+    RADAR_AXES.forEach(({ key, max }, i) => {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const v = Math.min(getVal(m, key) / max, 1);
+      const x = cx + r * v * Math.cos(a);
+      const y = cy + r * v * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = col + '22';
+    ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Radar model list
+  const list = document.getElementById('radarModelList');
+  list.innerHTML = state.radarModels.map((id, i) => {
+    const m = MODELS.find(x => x.id === id);
+    if (!m) return '';
+    const col = RADAR_COLORS[i % RADAR_COLORS.length];
+    return `<div class="radar-model-item selected" style="color:${col};border-color:${col}40">
+      <div class="radar-color-dot" style="background:${col}"></div>
+      <span style="flex:1;font-size:0.65rem">${m.name}</span>
+      <span style="font-size:0.6rem;color:var(--text-muted)">${m.maker}</span>
+      <button class="remove-btn" onclick="removeRadarModel('${id}')">✕</button>
+    </div>`;
+  }).join('');
+
+  // Add select
+  const sel = document.getElementById('radarAddSelect');
+  sel.innerHTML = '<option value="">— add model —</option>' +
+    getActiveModels()
+      .filter(m => !state.radarModels.includes(m.id))
+      .map(m => `<option value="${m.id}">${m.name}</option>`)
+      .join('');
+}
+
+function addRadarModel(id) {
+  if (!id) return;
+  if (state.radarModels.length < 5 && !state.radarModels.includes(id)) {
+    state.radarModels.push(id);
+    renderRadar();
+  }
+}
+
+function removeRadarModel(id) {
+  state.radarModels = state.radarModels.filter(x => x !== id);
+  renderRadar();
+}
+
+// ============================================================
+// BAR CHARTS BY CATEGORY
+// ============================================================
+
+const CATEGORIES = [
+  { key: 'intelligence', label: 'Intelligence Index', desc: 'Composite Score', color: '#63b3ed' },
+  { key: 'gpqa', label: 'GPQA Diamond', desc: 'PhD-Level Reasoning', color: '#8b5cf6' },
+  { key: 'math', label: 'MATH-500', desc: 'Competition Math', color: '#f59e0b' },
+  { key: 'humanEval', label: 'HumanEval', desc: 'Code Generation', color: '#10b981' },
+  { key: 'swe', label: 'SWE-bench Verified', desc: 'Real GitHub Issues', color: '#3b82f6' },
+  { key: 'aime', label: 'AIME 2025', desc: 'Olympiad Math', color: '#ef4444' },
+  { key: 'speed', label: 'Output Speed', desc: 'Tokens / Second', color: '#06b6d4' },
+  { key: 'qualityPerDollar', label: 'Quality / Dollar', desc: 'Best Value', color: '#68d391' },
+  { key: 'mmluPro', label: 'MMLU-Pro', desc: 'Multi-domain Knowledge', color: '#f472b6' },
+  { key: 'context', label: 'Context Window', desc: 'Max Input (K tokens)', color: '#a78bfa' },
+];
+
+function renderBars() {
+  const models = getActiveModels();
+  const grid = document.getElementById('categoryGrid');
+
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const sorted = [...models].sort((a, b) => getVal(b, cat.key) - getVal(a, cat.key)).slice(0, 10);
+    const maxVal = getVal(sorted[0], cat.key) || 1;
+
+    return `<div class="category-card">
+      <div class="category-card-header">
+        <div class="category-card-title">${cat.label}</div>
+        <div class="category-card-desc">${cat.desc}</div>
+      </div>
+      <div class="bar-list">
+        ${sorted.map((m, i) => {
+          const v = getVal(m, cat.key);
+          const pct = (v / maxVal * 100).toFixed(1);
+          const display = cat.key === 'context' ? v + 'K' : cat.key === 'speed' ? v + ' t/s' : cat.key === 'costPer1M' ? '$' + v.toFixed(2) : v.toFixed(1);
+          return `<div class="bar-item">
+            <span class="bar-rank">${i + 1}</span>
+            <span class="bar-name" title="${m.name}">${m.name}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+            <span class="bar-val">${display}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// API MODAL
+// ============================================================
+
+const API_DATA = {
+  'Google': { providers: [
+    { name: 'Google AI Studio', desc: 'Official free API — no credit card', price: 'Free Tier', url: 'https://aistudio.google.com/apikey', isFree: true },
+    { name: 'Google Cloud Vertex AI', desc: 'Enterprise with $300 free credits', price: 'Pay-as-you-go', url: 'https://cloud.google.com/vertex-ai', isFree: false },
+  ]},
+  'Anthropic': { providers: [
+    { name: 'Anthropic Console', desc: 'Official API platform', price: 'Pay-as-you-go', url: 'https://console.anthropic.com', isFree: false },
+    { name: 'AWS Bedrock', desc: 'Claude via AWS — free trial tier', price: 'Free trial', url: 'https://aws.amazon.com/bedrock', isFree: true },
+  ]},
+  'OpenAI': { providers: [
+    { name: 'OpenAI Platform', desc: 'Official API — $5 free credits', price: '$5 Free', url: 'https://platform.openai.com', isFree: true },
+    { name: 'Azure OpenAI', desc: 'Enterprise-grade deployment', price: 'Pay-as-you-go', url: 'https://azure.microsoft.com/en-us/products/ai-services/openai-service', isFree: false },
+  ]},
+  'xAI': { providers: [
+    { name: 'xAI Console', desc: 'Official Grok API — $25 free credits', price: '$25 Free', url: 'https://console.x.ai', isFree: true },
+  ]},
+  'Meta': { providers: [
+    { name: 'Together AI', desc: 'Llama models + $5 free credits', price: '$5 Free', url: 'https://together.ai', isFree: true },
+    { name: 'Groq', desc: 'Ultra-fast Llama inference', price: 'Free Tier', url: 'https://console.groq.com', isFree: true },
+    { name: 'Hugging Face', desc: 'Self-host or serverless', price: 'Free / Pay-as-you-go', url: 'https://huggingface.co/meta-llama', isFree: true },
+  ]},
+  'DeepSeek': { providers: [
+    { name: 'OpenRouter :free', desc: 'DeepSeek models — no API key needed', price: 'Free', url: 'https://openrouter.ai', isFree: true },
+    { name: 'DeepSeek Platform', desc: 'Official API — very low cost', price: '$0.27/1M in', url: 'https://platform.deepseek.com', isFree: false },
+  ]},
+  'Mistral': { providers: [
+    { name: 'Mistral La Plateforme', desc: 'Official API console', price: 'Pay-as-you-go', url: 'https://console.mistral.ai', isFree: false },
+    { name: 'Hugging Face', desc: 'Self-host open-weight models', price: 'Free', url: 'https://huggingface.co/mistralai', isFree: true },
+  ]},
+  'Alibaba': { providers: [
+    { name: 'Hugging Face', desc: 'Self-host Qwen models', price: 'Free', url: 'https://huggingface.co/Qwen', isFree: true },
+    { name: 'Together AI', desc: 'Hosted Qwen inference', price: 'Pay-as-you-go', url: 'https://together.ai', isFree: false },
+  ]},
+  'Microsoft': { providers: [
+    { name: 'GitHub Models', desc: 'Free access via GitHub account', price: 'Free', url: 'https://github.com/marketplace/models', isFree: true },
+    { name: 'Azure AI Foundry', desc: 'Enterprise deployment', price: 'Pay-as-you-go', url: 'https://ai.azure.com', isFree: false },
+  ]},
+  'NVIDIA': { providers: [
+    { name: 'NVIDIA NIM', desc: 'Free credits + self-host', price: 'Free credits', url: 'https://build.nvidia.com', isFree: true },
+  ]},
+  'IBM': { providers: [
+    { name: 'IBM watsonx.ai', desc: 'Lite plan — free up to limits', price: 'Free Lite', url: 'https://www.ibm.com/watsonx', isFree: true },
+  ]},
+  'Inception': { providers: [
+    { name: 'Inception AI', desc: 'Mercury diffusion LLM API', price: 'Pay-as-you-go', url: 'https://inception.ai', isFree: false },
+  ]},
+};
+
+function openModal(modelId) {
+  const m = MODELS.find(x => x.id === modelId);
+  if (!m) return;
+  const apiInfo = API_DATA[m.maker] || { providers: [] };
+
+  const snippet = m.openWeights
+    ? `from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel = AutoModelForCausalLM.from_pretrained("${m.name}")\ntokenizer = AutoTokenizer.from_pretrained("${m.name}")\n\noutput = model.generate(**tokenizer("Hello", return_tensors="pt"))`
+    : `import anthropic  # or openai, google.generativeai, etc.\n\n# Replace with your provider SDK\nclient = anthropic.Anthropic(api_key="YOUR_KEY")\n\nresponse = client.messages.create(\n    model="${m.id}",\n    max_tokens=1024,\n    messages=[{"role": "user", "content": "Hello"}]\n)`;
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-model-name">${m.name}</div>
+    <div class="modal-maker">${m.maker} · Released ${m.releaseDate} · ${m.tier} Tier · ${m.isFree ? '✓ Free Access Available' : 'Paid API'}</div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:1.25rem">
+      ${[['Intelligence', m.intelligence], ['GPQA', m.gpqa + '%'], ['Speed', m.speed + ' t/s'], ['Q/$', m.qualityPerDollar]].map(([l, v]) =>
+        `<div class="tt-stat"><div class="tt-stat-label">${l}</div><div class="tt-stat-value">${v}</div></div>`
+      ).join('')}
+    </div>
+
+    <div class="modal-section-title">API Access Options</div>
+    <div class="provider-cards">
+      ${apiInfo.providers.map(p => `
+        <a href="${p.url}" target="_blank" class="provider-card ${p.isFree ? 'free-provider' : ''}">
+          <div class="provider-info">
+            <div class="provider-name">${p.name}</div>
+            <div class="provider-desc">${p.desc}</div>
+          </div>
+          <div class="provider-price ${p.isFree ? 'free-price' : 'paid-price'}">${p.price} →</div>
+        </a>
+      `).join('')}
+    </div>
+
+    <div class="modal-section-title">Quick Start</div>
+    <div class="code-block" id="codeBlock">${snippet}<button class="copy-btn" onclick="copyCode()">COPY</button></div>
+
+    ${m.openWeights ? `<div style="margin-top:0.75rem;font-size:0.6rem;color:var(--accent3);letter-spacing:0.06em">⬡ Open weights — self-host for free on your own infrastructure</div>` : ''}
+  `;
+
+  document.getElementById('apiModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('apiModal').classList.remove('open');
+}
+
+function copyCode() {
+  const code = document.getElementById('codeBlock').innerText.replace('COPY', '').trim();
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'COPIED!';
+    setTimeout(() => btn.textContent = 'COPY', 2000);
+  });
+}
+
+document.getElementById('apiModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// PERMALINK
+// ============================================================
+
+function copyPermalink() {
+  const url = new URL(window.location);
+  url.searchParams.set('view', state.activeView);
+  if (state.search) url.searchParams.set('q', state.search);
+  url.searchParams.set('filter', state.filter);
+  url.searchParams.set('t', state.timelineIdx);
+  url.searchParams.set('x', document.getElementById('xAxis').value);
+  url.searchParams.set('y', document.getElementById('yAxis').value);
+  navigator.clipboard.writeText(url.toString());
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function loadPermalink() {
+  const url = new URL(window.location);
+  const view = url.searchParams.get('view');
+  const q = url.searchParams.get('q');
+  const filter = url.searchParams.get('filter');
+  const t = url.searchParams.get('t');
+  const x = url.searchParams.get('x');
+  const y = url.searchParams.get('y');
+
+  if (q) { document.getElementById('searchInput').value = q; state.search = q; }
+  if (filter) state.filter = filter;
+  if (t) { state.timelineIdx = parseInt(t); document.getElementById('timelineSlider').value = t; }
+  if (x) document.getElementById('xAxis').value = x;
+  if (y) document.getElementById('yAxis').value = y;
+  if (view) {
+    state.activeView = view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(`view-${view}`).classList.add('active');
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      const tabView = ['scatter', 'table', 'radar', 'bars'][i];
+      t.classList.toggle('active', tabView === view);
+    });
+  }
+}
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (state.activeView === 'scatter') renderScatter();
+    else if (state.activeView === 'radar') renderRadar();
+  }, 150);
+});
+
+// ============================================================
+// INIT
+// ============================================================
+
+function init() {
+  initTimeline();
+  updateEpochLabel();
+  loadPermalink();
+
+  // Compute initial pareto for counts
+  computePareto(MODELS, 'speed', 'intelligence');
+
+  renderScatter();
+}
+
+init();
+</script>
+</body>
+</html>
