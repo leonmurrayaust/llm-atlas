@@ -21,8 +21,8 @@ from urllib.error import URLError
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "models.json"
 LOG_FILE  = Path(__file__).parent.parent / "data" / "update_log.json"
-THRESHOLD_AUTO_MERGE = 2.0   # score points — drift below this = auto-merge PR
-THRESHOLD_ALERT      = 5.0   # score points — drift above this = Discord alert
+THRESHOLD_AUTO_MERGE = 999.0  # auto-merge ALL changes — no Discord needed yet
+THRESHOLD_ALERT      = 999.0  # alerts disabled until Discord is configured
 
 DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", "")
 GITHUB_TOKEN    = os.environ.get("GITHUB_TOKEN", "")

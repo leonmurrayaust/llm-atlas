@@ -13,9 +13,9 @@
   --surface2: #0f1628;
   --border: rgba(255,255,255,0.07);
   --border-bright: rgba(99,179,237,0.3);
-  --text: #e8edf8;
-  --text-dim: #6b7a99;
-  --text-muted: #3a4460;
+  --text: #ffffff;
+  --text-dim: #b0bdd4;
+  --text-muted: #7a8fad;
   --accent: #63b3ed;
   --accent2: #f6ad55;
   --accent3: #68d391;
@@ -74,7 +74,7 @@ header {
 }
 
 .logo-block .tagline {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -92,7 +92,7 @@ header {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent3);
@@ -120,7 +120,7 @@ header {
 }
 
 .chip {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.25rem 0.6rem;
@@ -182,17 +182,18 @@ header {
 }
 
 .pill {
-  font-size: 0.6rem;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--border);
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border-bright);
   border-radius: 2px;
   cursor: pointer;
   transition: all 0.15s;
   color: var(--text-dim);
-  background: transparent;
+  background: var(--surface);
   font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
 .pill:hover { border-color: var(--accent); color: var(--accent); }
@@ -214,7 +215,7 @@ header {
 }
 
 .timeline-label {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -252,7 +253,7 @@ header {
 }
 
 .tick {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -271,7 +272,7 @@ header {
 
 .tab {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0.7rem 1.4rem;
@@ -307,7 +308,7 @@ header {
 }
 
 .axis-label {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -318,7 +319,7 @@ select {
   border: 1px solid var(--border);
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   padding: 0.4rem 0.7rem;
   border-radius: 2px;
   outline: none;
@@ -330,7 +331,7 @@ select:focus { border-color: var(--accent); }
 
 .toggle-btn {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0.4rem 0.8rem;
@@ -364,15 +365,16 @@ select:focus { border-color: var(--accent); }
   border: 1px solid var(--border-bright);
   border-radius: 4px;
   padding: 1rem;
-  width: 280px;
-  pointer-events: none;
+  width: 300px;
+  pointer-events: auto;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: opacity 0.12s;
   z-index: 1000;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
 }
 
-#tooltip.visible { opacity: 1; pointer-events: auto; }
+#tooltip.visible { opacity: 1; }
+#tooltip:hover { opacity: 1 !important; }
 
 .tt-header {
   display: flex;
@@ -390,7 +392,7 @@ select:focus { border-color: var(--accent); }
 }
 
 .tt-maker {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -398,7 +400,7 @@ select:focus { border-color: var(--accent); }
 }
 
 .tt-badge {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.2rem 0.5rem;
@@ -426,7 +428,7 @@ select:focus { border-color: var(--accent); }
 }
 
 .tt-stat-label {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -444,7 +446,7 @@ select:focus { border-color: var(--accent); }
 .tt-bar-row { display: flex; align-items: center; gap: 0.5rem; }
 
 .tt-bar-label {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
   width: 70px;
@@ -468,7 +470,7 @@ select:focus { border-color: var(--accent); }
 }
 
 .tt-bar-val {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   width: 35px;
   text-align: right;
@@ -482,7 +484,7 @@ select:focus { border-color: var(--accent); }
   padding: 0.5rem;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border: 1px solid var(--accent);
@@ -510,7 +512,7 @@ table {
 thead th {
   text-align: left;
   padding: 0.6rem 0.8rem;
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -542,7 +544,7 @@ tbody td {
 }
 
 .rank-cell {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 600;
   width: 30px;
@@ -605,7 +607,7 @@ tbody td {
 .radar-controls { padding: 1rem; }
 
 .radar-title {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -621,7 +623,7 @@ tbody td {
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 3px;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -636,7 +638,7 @@ tbody td {
 }
 
 .remove-btn {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   cursor: pointer;
   background: none;
@@ -677,7 +679,7 @@ tbody td {
 }
 
 .category-card-desc {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   color: var(--text-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -688,7 +690,7 @@ tbody td {
 .bar-item { display: flex; align-items: center; gap: 0.6rem; }
 
 .bar-rank {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   width: 16px;
   text-align: right;
@@ -696,7 +698,7 @@ tbody td {
 }
 
 .bar-name {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--text);
   width: 130px;
   flex-shrink: 0;
@@ -720,7 +722,7 @@ tbody td {
 }
 
 .bar-val {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   width: 40px;
   text-align: right;
@@ -777,7 +779,7 @@ tbody td {
 }
 
 .modal-maker {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -785,7 +787,7 @@ tbody td {
 }
 
 .modal-section-title {
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -820,12 +822,12 @@ tbody td {
 }
 
 .provider-desc {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
 }
 
 .provider-price {
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -838,7 +840,7 @@ tbody td {
   border: 1px solid var(--border);
   border-radius: 3px;
   padding: 1rem;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   color: var(--accent);
   overflow-x: auto;
   white-space: pre;
@@ -850,7 +852,7 @@ tbody td {
   position: absolute;
   top: 0.5rem; right: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.25rem 0.5rem;
@@ -870,7 +872,7 @@ tbody td {
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: 0.75rem;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 0.06em;
 }
@@ -913,7 +915,7 @@ tbody td {
   color: var(--accent);
   padding: 0.6rem 1.2rem;
   border-radius: 3px;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0;
@@ -1500,20 +1502,70 @@ function renderScatter() {
       ctx.stroke();
     }
 
-    // Label
-    ctx.globalAlpha = dimmed ? 0.1 : (state.lockedModel && state.lockedModel !== m.id ? 0.25 : 0.85);
-    ctx.fillStyle = '#e8edf8';
-    ctx.font = '600 9px JetBrains Mono, monospace';
-    ctx.textAlign = 'left';
-    const shortName = m.name.length > 16 ? m.name.slice(0, 14) + '…' : m.name;
-    ctx.fillText(shortName, x + r + 3, y + 3);
-
     ctx.globalAlpha = 1;
-    scatterDots.push({ m, x, y, r: r + 2 });
+    scatterDots.push({ m, x, y, r: r + 2, col, dimmed });
   });
 
   // Legend
   renderScatterLegend(models, colorMode);
+
+  // Draw labels AFTER all dots - with collision avoidance
+  const labelBoxes = [];
+  const FONT_SIZE = 11;
+  ctx.font = `600 ${FONT_SIZE}px JetBrains Mono, monospace`;
+
+  scatterDots.forEach(({ m, x, y, r, col, dimmed }) => {
+    const alpha = dimmed ? 0.1 : (state.lockedModel && state.lockedModel !== m.id ? 0.3 : 1.0);
+    const shortName = m.name.length > 18 ? m.name.slice(0, 16) + '…' : m.name;
+    const tw = ctx.measureText(shortName).width;
+    const th = FONT_SIZE;
+    const pad = 4;
+
+    // Try 8 positions around the dot, pick first non-overlapping
+    const positions = [
+      { lx: x + r + pad,     ly: y + th * 0.35 },   // right
+      { lx: x - tw - r - pad, ly: y + th * 0.35 },  // left
+      { lx: x - tw / 2,      ly: y - r - pad },      // above centre
+      { lx: x - tw / 2,      ly: y + r + th + pad }, // below centre
+      { lx: x + r + pad,     ly: y - r },             // right-up
+      { lx: x + r + pad,     ly: y + r + th },        // right-down
+      { lx: x - tw - r - pad, ly: y - r },            // left-up
+      { lx: x - tw - r - pad, ly: y + r + th },       // left-down
+    ];
+
+    let chosen = positions[0]; // fallback
+    for (const pos of positions) {
+      const box = { x1: pos.lx - 2, y1: pos.ly - th, x2: pos.lx + tw + 2, y2: pos.ly + 2 };
+      // Check canvas bounds
+      if (box.x1 < PAD.left || box.x2 > W - PAD.right || box.y1 < PAD.top || box.y2 > PAD.top + ph) continue;
+      // Check overlap with existing labels
+      const overlaps = labelBoxes.some(b =>
+        box.x1 < b.x2 + 3 && box.x2 > b.x1 - 3 && box.y1 < b.y2 + 3 && box.y2 > b.y1 - 3
+      );
+      if (!overlaps) { chosen = pos; break; }
+    }
+
+    labelBoxes.push({ x1: chosen.lx - 2, y1: chosen.ly - th, x2: chosen.lx + tw + 2, y2: chosen.ly + 2 });
+
+    // Thin connector line if label moved far from dot
+    const dist = Math.hypot(chosen.lx - x, chosen.ly - y);
+    if (dist > r + 20) {
+      ctx.globalAlpha = alpha * 0.25;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(chosen.lx, chosen.ly - th * 0.3);
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `600 ${FONT_SIZE}px JetBrains Mono, monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText(shortName, chosen.lx, chosen.ly);
+    ctx.globalAlpha = 1;
+  });
 }
 
 function renderScatterLegend(models, mode) {
@@ -1556,7 +1608,12 @@ document.getElementById('scatterCanvas').addEventListener('mousemove', function(
     showTooltip(hit.m, e.clientX, e.clientY);
     this.style.cursor = 'pointer';
   } else {
-    hideTooltip();
+    // Only hide if mouse not over tooltip itself
+    const tt = document.getElementById('tooltip');
+    const tr = tt.getBoundingClientRect();
+    if (e.clientX < tr.left || e.clientX > tr.right || e.clientY < tr.top || e.clientY > tr.bottom) {
+      if (!state.lockedModel) hideTooltip();
+    }
     this.style.cursor = 'crosshair';
   }
 });
@@ -1579,6 +1636,16 @@ document.getElementById('scatterCanvas').addEventListener('click', function(e) {
 });
 
 document.getElementById('scatterCanvas').addEventListener('mouseleave', function() {
+  if (!state.lockedModel) {
+    // Small delay so mouse can move to tooltip without flicker
+    setTimeout(() => {
+      const tt = document.getElementById('tooltip');
+      if (!tt.matches(':hover') && !state.lockedModel) hideTooltip();
+    }, 80);
+  }
+});
+
+document.getElementById('tooltip').addEventListener('mouseleave', function() {
   if (!state.lockedModel) hideTooltip();
 });
 
@@ -1594,6 +1661,7 @@ function showTooltip(m, cx, cy, locked = false) {
   const apiClass = m.isFree ? 'free-btn' : '';
 
   tt.innerHTML = `
+    <button class="tt-api-btn ${apiClass}" onclick="openModal('${m.id}')" style="margin-bottom:0.75rem">${apiLabel}</button>
     <div class="tt-header">
       <div>
         <div class="tt-name">${m.name}</div>
@@ -1605,7 +1673,7 @@ function showTooltip(m, cx, cy, locked = false) {
       <div class="tt-stat"><div class="tt-stat-label">Intelligence</div><div class="tt-stat-value">${m.intelligence}</div></div>
       <div class="tt-stat"><div class="tt-stat-label">Speed</div><div class="tt-stat-value">${m.speed} t/s</div></div>
       <div class="tt-stat"><div class="tt-stat-label">Q/Dollar</div><div class="tt-stat-value">${m.qualityPerDollar}</div></div>
-      <div class="tt-stat"><div class="tt-stat-label">Context</div><div class="tt-stat-value">${m.context >= 1000 ? m.context + 'K' : m.context + 'K'}</div></div>
+      <div class="tt-stat"><div class="tt-stat-label">Context</div><div class="tt-stat-value">${m.context}K</div></div>
     </div>
     <div class="tt-bars">
       ${[['GPQA', m.gpqa, 100], ['MMLU-Pro', m.mmluPro, 100], ['Code', m.humanEval, 100], ['Math', m.math, 100], ['SWE', m.swe, 100]].map(([l, v, mx]) => `
@@ -1615,19 +1683,19 @@ function showTooltip(m, cx, cy, locked = false) {
           <span class="tt-bar-val">${v.toFixed(1)}</span>
         </div>`).join('')}
     </div>
-    <button class="tt-api-btn ${apiClass}" onclick="openModal('${m.id}')">${apiLabel}</button>
-    ${locked ? '<div style="font-size:0.55rem;color:var(--text-muted);text-align:center;margin-top:0.4rem;letter-spacing:0.05em">CLICK ANYWHERE TO DISMISS</div>' : ''}
+    ${locked ? '<div style="font-size:0.6rem;color:var(--text-muted);text-align:center;margin-top:0.6rem;letter-spacing:0.05em">CLICK ANYWHERE TO DISMISS</div>' : ''}
   `;
 
   const vpW = window.innerWidth;
   const vpH = window.innerHeight;
   let left = cx + 16;
   let top = cy - 10;
-  if (left + 300 > vpW) left = cx - 300;
-  if (top + 400 > vpH) top = vpH - 420;
+  if (left + 310 > vpW) left = cx - 316;
+  if (top + 440 > vpH) top = vpH - 450;
   tt.style.left = left + 'px';
-  tt.style.top = top + 'px';
+  tt.style.top = Math.max(10, top) + 'px';
   tt.classList.add('visible');
+  tt.classList.toggle('sticky', locked);
 }
 
 function hideTooltip() {
