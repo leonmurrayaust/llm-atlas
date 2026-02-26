@@ -1,0 +1,78 @@
+name: 🔍 Anomaly Detector
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+    paths: ['data/models.json']
+
+jobs:
+  anomaly-check:
+    if: github.event.pull_request.merged == true
+    name: Check for suspicious score changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run anomaly detection
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          python3 - << 'EOF'
+          import json, subprocess, os
+          from urllib.request import urlopen, Request
+
+          # Get diff of models.json between this merge and previous commit
+          result = subprocess.run(
+              ["git", "diff", "HEAD~1", "HEAD", "--", "data/models.json"],
+              capture_output=True, text=True
+          )
+
+          ANOMALY_THRESHOLD = 8.0  # points — above this is suspicious
+          alerts = []
+
+          # Parse the unified diff for changed numeric values
+          import re
+          removed = re.findall(r'^-.*?"(\w+)":\s*([\d.]+)', result.stdout, re.MULTILINE)
+          added   = re.findall(r'^\+.*?"(\w+)":\s*([\d.]+)', result.stdout, re.MULTILINE)
+
+          # Simple heuristic: find matching keys with big jumps
+          removed_map = {}
+          for key, val in removed:
+              removed_map.setdefault(key, []).append(float(val))
+          for key, val in added:
+              new_val = float(val)
+              if key in removed_map and removed_map[key]:
+                  old_val = removed_map[key].pop(0)
+                  drift = abs(new_val - old_val)
+                  if drift >= ANOMALY_THRESHOLD:
+                      alerts.append(f"⚠️ `{key}`: {old_val} → {new_val} (Δ{drift:.1f}) — SUSPICIOUS")
+
+          if alerts:
+              webhook = os.environ.get("DISCORD_WEBHOOK", "")
+              msg = "🚨 **Anomaly Detected in LLM Atlas Data**\n\n"
+              msg += "Unusually large score changes after latest merge:\n"
+              msg += "\n".join(alerts)
+              msg += "\n\n⚠️ Please verify these scores against primary sources."
+              msg += "\n🔗 https://github.com/${{ github.repository }}/commits/main"
+
+              if webhook:
+                  payload = json.dumps({"content": msg}).encode()
+                  req = Request(webhook, data=payload,
+                                headers={"Content-Type": "application/json"}, method="POST")
+                  urlopen(req, timeout=10)
+                  print("Anomaly alert sent to Discord")
+              else:
+                  print("ANOMALY DETECTED (no webhook set):")
+                  print(msg)
+          else:
+              print(f"✓ No anomalies detected (threshold: {ANOMALY_THRESHOLD}pts)")
+          EOF
