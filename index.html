@@ -358,23 +358,47 @@ select:focus { border-color: var(--accent); }
   cursor: crosshair;
 }
 
-/* TOOLTIP */
-#tooltip {
+/* MODEL CARD - fixed top-right of scatter plot */
+#modelCard {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  width: 320px;
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  padding: 1.1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 100;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+}
+#modelCard.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* BENCHMARK TOOLTIP */
+#benchTip {
   position: fixed;
   background: var(--surface2);
   border: 1px solid var(--border-bright);
   border-radius: 4px;
-  padding: 1rem;
-  width: 300px;
-  pointer-events: auto;
+  padding: 0.8rem 1rem;
+  max-width: 260px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  pointer-events: none;
   opacity: 0;
-  transition: opacity 0.12s;
-  z-index: 1000;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  transition: opacity 0.15s;
+  z-index: 500;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
 }
-
-#tooltip.visible { opacity: 1; }
-#tooltip:hover { opacity: 1 !important; }
+#benchTip.visible { opacity: 1; }
+#benchTip strong { color: var(--accent); display:block; margin-bottom:0.3rem; font-size:0.85rem; }
+#benchTip em { color: var(--accent3); font-style:normal; font-size:0.72rem; }
 
 .tt-header {
   display: flex;
@@ -1059,16 +1083,16 @@ tbody td {
             <th onclick="sortTable('rank')">#</th>
             <th onclick="sortTable('name')">Model</th>
             <th onclick="sortTable('maker')">Maker</th>
-            <th onclick="sortTable('intelligence')">Intel.</th>
-            <th onclick="sortTable('gpqa')">GPQA</th>
-            <th onclick="sortTable('mmluPro')">MMLU-P</th>
-            <th onclick="sortTable('humanEval')">Code</th>
-            <th onclick="sortTable('math')">Math</th>
-            <th onclick="sortTable('swe')">SWE</th>
-            <th onclick="sortTable('aime')">AIME</th>
-            <th onclick="sortTable('speed')">Speed</th>
-            <th onclick="sortTable('costPer1M')">$/1M</th>
-            <th onclick="sortTable('qualityPerDollar')">Q/$</th>
+            <th onclick="sortTable('intelligence')" data-bench="intelligence">Intel.</th>
+            <th onclick="sortTable('gpqa')" data-bench="gpqa">GPQA</th>
+            <th onclick="sortTable('mmluPro')" data-bench="mmluPro">MMLU-P</th>
+            <th onclick="sortTable('humanEval')" data-bench="humanEval">Code</th>
+            <th onclick="sortTable('math')" data-bench="math">Math</th>
+            <th onclick="sortTable('swe')" data-bench="swe">SWE</th>
+            <th onclick="sortTable('aime')" data-bench="aime">AIME</th>
+            <th onclick="sortTable('speed')" data-bench="speed">Speed</th>
+            <th onclick="sortTable('costPer1M')" data-bench="costPer1M">$/1M</th>
+            <th onclick="sortTable('qualityPerDollar')" data-bench="qualityPerDollar">Q/$</th>
             <th>Status</th>
             <th>API</th>
           </tr>
@@ -1102,8 +1126,11 @@ tbody td {
 
 </div>
 
-<!-- TOOLTIP -->
-<div id="tooltip"></div>
+<!-- MODEL CARD - fixed top-right of scatter -->
+<div id="modelCard"></div>
+
+<!-- BENCHMARK TOOLTIP -->
+<div id="benchTip"></div>
 
 <!-- API MODAL -->
 <div id="apiModal">
@@ -1207,7 +1234,6 @@ let state = {
   radarModels: ['gemini-25-pro', 'o3', 'claude-opus-45', 'deepseek-r1'],
   activeView: 'scatter',
   hoveredModel: null,
-  lockedModel: null,
 };
 
 // ============================================================
@@ -1377,7 +1403,7 @@ function renderScatter() {
   const canvas = document.getElementById('scatterCanvas');
   const dpr = window.devicePixelRatio || 1;
   const W = canvas.parentElement.clientWidth;
-  const H = Math.max(520, W * 0.55);
+  const H = Math.max(640, window.innerHeight - 300);
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -1392,7 +1418,7 @@ function renderScatter() {
 
   computePareto(models, xKey, yKey);
 
-  const PAD = { top: 30, right: 30, bottom: 60, left: 70 };
+  const PAD = { top: 40, right: 40, bottom: 75, left: 85 };
   const pw = W - PAD.left - PAD.right;
   const ph = H - PAD.top - PAD.bottom;
 
@@ -1423,29 +1449,29 @@ function renderScatter() {
     ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + ph); ctx.stroke();
   }
 
-  // Axis labels
-  ctx.fillStyle = '#3a4460';
-  ctx.font = '600 10px JetBrains Mono, monospace';
+  // Axis labels - bright and big
+  ctx.fillStyle = '#7a8fad';
+  ctx.font = 'bold 13px JetBrains Mono, monospace';
   ctx.textAlign = 'center';
-  ctx.fillText(getLabel(xKey).toUpperCase(), PAD.left + pw / 2, H - 12);
+  ctx.fillText(getLabel(xKey).toUpperCase(), PAD.left + pw / 2, H - 14);
   ctx.save();
-  ctx.translate(15, PAD.top + ph / 2);
+  ctx.translate(18, PAD.top + ph / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(getLabel(yKey).toUpperCase(), 0, 0);
   ctx.restore();
 
-  // Axis tick values
-  ctx.fillStyle = '#3a4460';
-  ctx.font = '9px JetBrains Mono, monospace';
+  // Axis tick values - bigger and brighter
+  ctx.fillStyle = '#b0bdd4';
+  ctx.font = '12px JetBrains Mono, monospace';
   ctx.textAlign = 'center';
   for (let i = 0; i <= 4; i++) {
     const xV = xMin + (xMax - xMin) * (i / 4);
     const xP = toX(xV);
-    ctx.fillText(xV > 1000 ? Math.round(xV / 1000) + 'K' : xV.toFixed(xV < 10 ? 1 : 0), xP, PAD.top + ph + 18);
+    ctx.fillText(xV > 1000 ? Math.round(xV / 1000) + 'K' : xV.toFixed(xV < 10 ? 1 : 0), xP, PAD.top + ph + 22);
     const yV = yMin + (yMax - yMin) * (i / 4);
     const yP = toY(yV);
     ctx.textAlign = 'right';
-    ctx.fillText(yV.toFixed(0), PAD.left - 8, yP + 4);
+    ctx.fillText(yV.toFixed(0), PAD.left - 10, yP + 4);
     ctx.textAlign = 'center';
   }
 
@@ -1472,98 +1498,111 @@ function renderScatter() {
     }
   }
 
-  // Dots
+  // Dots - bigger, ghosted labels
   scatterDots = [];
   models.forEach(m => {
     const x = toX(getVal(m, xKey));
     const y = toY(getVal(m, yKey));
     const col = getColor(m, colorMode);
-    const r = m.isPareto && state.showPareto ? 7 : 5;
+    const isHovered = state.hoveredModel === m.id;
+    const r = m.isPareto && state.showPareto ? 11 : 8;
     const dimmed = state.search && !m.name.toLowerCase().includes(state.search.toLowerCase()) && !m.maker.toLowerCase().includes(state.search.toLowerCase());
 
-    ctx.globalAlpha = dimmed ? 0.15 : (state.lockedModel && state.lockedModel !== m.id ? 0.4 : 1);
+    ctx.globalAlpha = dimmed ? 0.15 : 1;
 
-    // Pareto glow
-    if (m.isPareto && state.showPareto) {
+    // Glow for hovered or pareto
+    if (isHovered) {
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 22;
+    } else if (m.isPareto && state.showPareto) {
       ctx.shadowColor = col;
       ctx.shadowBlur = 10;
     }
 
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = col;
+    ctx.fillStyle = isHovered ? '#ffffff' : col;
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Pareto ring
+    // Ring
     if (m.isPareto && state.showPareto) {
-      ctx.strokeStyle = 'rgba(246,173,85,0.6)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(246,173,85,0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+    if (isHovered) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
       ctx.stroke();
     }
 
     ctx.globalAlpha = 1;
-    scatterDots.push({ m, x, y, r: r + 2, col, dimmed });
+    scatterDots.push({ m, x, y, r: r + 3, col, dimmed });
   });
 
-  // Legend
-  renderScatterLegend(models, colorMode);
-
-  // Draw labels AFTER all dots - with collision avoidance
+  // Draw labels - ghosted by default, bright on hover
   const labelBoxes = [];
-  const FONT_SIZE = 11;
+  const FONT_SIZE = 13;
   ctx.font = `600 ${FONT_SIZE}px JetBrains Mono, monospace`;
 
   scatterDots.forEach(({ m, x, y, r, col, dimmed }) => {
-    const alpha = dimmed ? 0.1 : (state.lockedModel && state.lockedModel !== m.id ? 0.3 : 1.0);
-    const shortName = m.name.length > 18 ? m.name.slice(0, 16) + '…' : m.name;
+    const isHovered = state.hoveredModel === m.id;
+    // Ghost = 12% opacity, hovered = 100%
+    const alpha = dimmed ? 0.08 : isHovered ? 1.0 : 0.12;
+    const shortName = m.name.length > 20 ? m.name.slice(0, 18) + '…' : m.name;
     const tw = ctx.measureText(shortName).width;
     const th = FONT_SIZE;
-    const pad = 4;
+    const pad = 5;
 
-    // Try 8 positions around the dot, pick first non-overlapping
     const positions = [
-      { lx: x + r + pad,     ly: y + th * 0.35 },   // right
-      { lx: x - tw - r - pad, ly: y + th * 0.35 },  // left
-      { lx: x - tw / 2,      ly: y - r - pad },      // above centre
-      { lx: x - tw / 2,      ly: y + r + th + pad }, // below centre
-      { lx: x + r + pad,     ly: y - r },             // right-up
-      { lx: x + r + pad,     ly: y + r + th },        // right-down
-      { lx: x - tw - r - pad, ly: y - r },            // left-up
-      { lx: x - tw - r - pad, ly: y + r + th },       // left-down
+      { lx: x + r + pad,      ly: y + th * 0.35 },
+      { lx: x - tw - r - pad, ly: y + th * 0.35 },
+      { lx: x - tw / 2,       ly: y - r - pad },
+      { lx: x - tw / 2,       ly: y + r + th + pad },
+      { lx: x + r + pad,      ly: y - r },
+      { lx: x + r + pad,      ly: y + r + th },
+      { lx: x - tw - r - pad, ly: y - r },
+      { lx: x - tw - r - pad, ly: y + r + th },
     ];
 
-    let chosen = positions[0]; // fallback
+    let chosen = positions[0];
     for (const pos of positions) {
       const box = { x1: pos.lx - 2, y1: pos.ly - th, x2: pos.lx + tw + 2, y2: pos.ly + 2 };
-      // Check canvas bounds
       if (box.x1 < PAD.left || box.x2 > W - PAD.right || box.y1 < PAD.top || box.y2 > PAD.top + ph) continue;
-      // Check overlap with existing labels
       const overlaps = labelBoxes.some(b =>
-        box.x1 < b.x2 + 3 && box.x2 > b.x1 - 3 && box.y1 < b.y2 + 3 && box.y2 > b.y1 - 3
+        box.x1 < b.x2 + 4 && box.x2 > b.x1 - 4 && box.y1 < b.y2 + 4 && box.y2 > b.y1 - 4
       );
       if (!overlaps) { chosen = pos; break; }
     }
-
     labelBoxes.push({ x1: chosen.lx - 2, y1: chosen.ly - th, x2: chosen.lx + tw + 2, y2: chosen.ly + 2 });
 
-    // Thin connector line if label moved far from dot
+    // Connector line for displaced labels
     const dist = Math.hypot(chosen.lx - x, chosen.ly - y);
-    if (dist > r + 20) {
-      ctx.globalAlpha = alpha * 0.25;
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 0.8;
+    if (dist > r + 18) {
+      ctx.globalAlpha = alpha * 0.3;
+      ctx.strokeStyle = isHovered ? '#ffffff' : col;
+      ctx.lineWidth = isHovered ? 1.2 : 0.8;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(chosen.lx, chosen.ly - th * 0.3);
       ctx.stroke();
     }
 
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `600 ${FONT_SIZE}px JetBrains Mono, monospace`;
+    // Text shadow for hovered label
+    if (isHovered) {
+      ctx.globalAlpha = 1;
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 8;
+    } else {
+      ctx.globalAlpha = alpha;
+      ctx.shadowBlur = 0;
+    }
+    ctx.fillStyle = isHovered ? '#ffffff' : '#ffffff';
+    ctx.font = `${isHovered ? '700' : '600'} ${isHovered ? FONT_SIZE + 1 : FONT_SIZE}px JetBrains Mono, monospace`;
     ctx.textAlign = 'left';
     ctx.fillText(shortName, chosen.lx, chosen.ly);
+    ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;
   });
 }
@@ -1597,25 +1636,66 @@ function togglePareto() {
   renderScatter();
 }
 
+// ── Hover state ──────────────────────────────────────────────
+let hoverTimer = null;
+let cardFadeTimer = null;
+let cardVisible = false;
+
+function clearHoverTimer() {
+  if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+}
+function clearFadeTimer() {
+  if (cardFadeTimer) { clearTimeout(cardFadeTimer); cardFadeTimer = null; }
+}
+
 // Scatter interaction
 document.getElementById('scatterCanvas').addEventListener('mousemove', function(e) {
-  if (state.lockedModel) return;
   const rect = this.getBoundingClientRect();
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
   const hit = scatterDots.find(d => Math.hypot(d.x - mx, d.y - my) < d.r + 4);
+
   if (hit) {
-    showTooltip(hit.m, e.clientX, e.clientY);
     this.style.cursor = 'pointer';
+    if (state.hoveredModel !== hit.m.id) {
+      state.hoveredModel = hit.m.id;
+      renderScatter(); // brighten label immediately
+      clearHoverTimer();
+      clearFadeTimer();
+      // If card already visible, swap model immediately
+      if (cardVisible) {
+        showModelCard(hit.m);
+        resetFadeTimer();
+      } else {
+        // 1 second delay before card appears
+        hoverTimer = setTimeout(() => {
+          showModelCard(hit.m);
+          cardVisible = true;
+          resetFadeTimer();
+        }, 1000);
+      }
+    } else if (cardVisible) {
+      // Still hovering same model — reset fade timer
+      clearFadeTimer();
+      resetFadeTimer();
+    }
   } else {
-    // Only hide if mouse not over tooltip itself
-    const tt = document.getElementById('tooltip');
-    const tr = tt.getBoundingClientRect();
-    if (e.clientX < tr.left || e.clientX > tr.right || e.clientY < tr.top || e.clientY > tr.bottom) {
-      if (!state.lockedModel) hideTooltip();
+    if (state.hoveredModel) {
+      state.hoveredModel = null;
+      clearHoverTimer();
+      renderScatter();
+      // Start fade timer when mouse leaves dot
+      if (cardVisible) resetFadeTimer();
     }
     this.style.cursor = 'crosshair';
   }
+});
+
+document.getElementById('scatterCanvas').addEventListener('mouseleave', function() {
+  state.hoveredModel = null;
+  clearHoverTimer();
+  renderScatter();
+  if (cardVisible) resetFadeTimer();
 });
 
 document.getElementById('scatterCanvas').addEventListener('click', function(e) {
@@ -1624,83 +1704,106 @@ document.getElementById('scatterCanvas').addEventListener('click', function(e) {
   const my = e.clientY - rect.top;
   const hit = scatterDots.find(d => Math.hypot(d.x - mx, d.y - my) < d.r + 4);
   if (hit) {
-    state.lockedModel = state.lockedModel === hit.m.id ? null : hit.m.id;
-    if (state.lockedModel) showTooltip(hit.m, e.clientX, e.clientY, true);
-    else hideTooltip();
-    renderScatter();
-  } else {
-    state.lockedModel = null;
-    hideTooltip();
-    renderScatter();
+    showModelCard(hit.m);
+    cardVisible = true;
+    clearFadeTimer(); // keep open on click
   }
 });
 
-document.getElementById('scatterCanvas').addEventListener('mouseleave', function() {
-  if (!state.lockedModel) {
-    // Small delay so mouse can move to tooltip without flicker
-    setTimeout(() => {
-      const tt = document.getElementById('tooltip');
-      if (!tt.matches(':hover') && !state.lockedModel) hideTooltip();
-    }, 80);
-  }
+function resetFadeTimer() {
+  clearFadeTimer();
+  cardFadeTimer = setTimeout(() => {
+    hideModelCard();
+    cardVisible = false;
+  }, 10000); // 10 seconds
+}
+
+// Model card stays open when mouse is over it
+document.getElementById('modelCard').addEventListener('mouseenter', function() {
+  clearFadeTimer();
+});
+document.getElementById('modelCard').addEventListener('mouseleave', function() {
+  resetFadeTimer();
 });
 
-document.getElementById('tooltip').addEventListener('mouseleave', function() {
-  if (!state.lockedModel) hideTooltip();
-});
+// ── Model Card (fixed top-right of chart) ────────────────────
 
-// ============================================================
-// TOOLTIP
-// ============================================================
+const CHAT_LINKS = {
+  'Google':    'https://gemini.google.com',
+  'Anthropic': 'https://claude.ai',
+  'OpenAI':    'https://chat.openai.com',
+  'xAI':       'https://grok.com',
+  'Meta':      'https://meta.ai',
+  'DeepSeek':  'https://chat.deepseek.com',
+  'Mistral':   'https://chat.mistral.ai',
+  'Alibaba':   'https://qwen.aliyun.com',
+  'Microsoft': 'https://copilot.microsoft.com',
+  'NVIDIA':    'https://build.nvidia.com',
+  'IBM':       'https://watsonx.ai',
+  'Inception': 'https://inception.ai',
+  'Zhipu AI':  'https://chatglm.cn',
+  'Moonshot AI': 'https://kimi.moonshot.cn',
+  'MiniMax':   'https://hailuoai.com',
+  'StepFun':   'https://stepchat.cn',
+  'Xiaomi':    'https://huggingface.co',
+};
 
-function showTooltip(m, cx, cy, locked = false) {
-  const tt = document.getElementById('tooltip');
-  const paretoTag = m.isPareto ? `<span class="tt-badge pareto">⬡ Pareto</span>` : '';
-  const freeTag = m.isFree ? `<span class="tt-badge free">Free</span>` : `<span class="tt-badge paid">Paid</span>`;
-  const apiLabel = m.isFree ? '⬡ Get Free API Access →' : '→ View API Options';
-  const apiClass = m.isFree ? 'free-btn' : '';
+function showModelCard(m) {
+  const card = document.getElementById('modelCard');
+  const chatUrl = CHAT_LINKS[m.maker] || m.apiUrl || '#';
+  const freeTag = m.isFree
+    ? `<span style="color:#68d391;font-size:0.75rem;letter-spacing:0.08em">● FREE ACCESS</span>`
+    : `<span style="color:#fc8181;font-size:0.75rem;letter-spacing:0.08em">● PAID</span>`;
+  const paretoTag = m.isPareto
+    ? `<span style="color:#f6ad55;font-size:0.72rem;letter-spacing:0.08em">⬡ PARETO OPTIMAL</span>` : '';
 
-  tt.innerHTML = `
-    <button class="tt-api-btn ${apiClass}" onclick="openModal('${m.id}')" style="margin-bottom:0.75rem">${apiLabel}</button>
-    <div class="tt-header">
-      <div>
-        <div class="tt-name">${m.name}</div>
-        <div class="tt-maker">${m.maker} · ${m.releaseDate}</div>
-      </div>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${freeTag}${paretoTag}</div>
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem">
+      <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">${freeTag}${paretoTag}</div>
+      <button onclick="hideModelCard()" style="background:none;border:none;color:var(--text-muted);font-size:1rem;cursor:pointer;line-height:1;padding:0">✕</button>
     </div>
-    <div class="tt-stats">
-      <div class="tt-stat"><div class="tt-stat-label">Intelligence</div><div class="tt-stat-value">${m.intelligence}</div></div>
-      <div class="tt-stat"><div class="tt-stat-label">Speed</div><div class="tt-stat-value">${m.speed} t/s</div></div>
-      <div class="tt-stat"><div class="tt-stat-label">Q/Dollar</div><div class="tt-stat-value">${m.qualityPerDollar}</div></div>
-      <div class="tt-stat"><div class="tt-stat-label">Context</div><div class="tt-stat-value">${m.context}K</div></div>
-    </div>
-    <div class="tt-bars">
-      ${[['GPQA', m.gpqa, 100], ['MMLU-Pro', m.mmluPro, 100], ['Code', m.humanEval, 100], ['Math', m.math, 100], ['SWE', m.swe, 100]].map(([l, v, mx]) => `
-        <div class="tt-bar-row">
-          <span class="tt-bar-label">${l}</span>
-          <div class="tt-bar-track"><div class="tt-bar-fill" style="width:${(v/mx*100).toFixed(1)}%"></div></div>
-          <span class="tt-bar-val">${v.toFixed(1)}</span>
+    <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:0.15rem;line-height:1.2">${m.name}</div>
+    <div style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem">${m.maker} · ${m.releaseDate} · ${m.tier}</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;margin-bottom:1rem">
+      ${[['Intel', m.intelligence,'var(--accent)'],['Speed',m.speed+'t/s','var(--accent2)'],['Q/$',m.qualityPerDollar,'var(--accent3)'],['GPQA',m.gpqa+'%','#c084fc'],['Math',m.math+'%','#f472b6'],['Context',m.context+'K','var(--text-dim)']].map(([l,v,c])=>`
+        <div style="background:var(--bg);border:1px solid var(--border);padding:0.4rem 0.5rem;border-radius:3px">
+          <div style="font-size:0.6rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase">${l}</div>
+          <div style="font-size:0.9rem;font-weight:700;color:${c};margin-top:0.1rem">${v}</div>
         </div>`).join('')}
     </div>
-    ${locked ? '<div style="font-size:0.6rem;color:var(--text-muted);text-align:center;margin-top:0.6rem;letter-spacing:0.05em">CLICK ANYWHERE TO DISMISS</div>' : ''}
+
+    ${[['GPQA',m.gpqa,100,'#c084fc'],['Code',m.humanEval,100,'var(--accent)'],['Math',m.math,100,'#f472b6'],['SWE',m.swe,100,'var(--accent2)'],['AIME',m.aime,100,'var(--accent3)']].map(([l,v,mx,c])=>`
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem">
+        <span style="font-size:0.68rem;color:var(--text-muted);width:42px;flex-shrink:0;text-transform:uppercase">${l}</span>
+        <div style="flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="width:${(v/mx*100).toFixed(1)}%;height:100%;background:${c};border-radius:3px"></div>
+        </div>
+        <span style="font-size:0.72rem;color:var(--text-dim);width:36px;text-align:right">${v.toFixed(1)}</span>
+      </div>`).join('')}
+
+    <div style="display:flex;gap:0.5rem;margin-top:1rem">
+      <a href="${chatUrl}" target="_blank" style="flex:1;display:block;text-align:center;padding:0.55rem;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--accent3);color:var(--accent3);background:rgba(104,211,145,0.07);border-radius:3px;text-decoration:none;transition:background 0.15s" onmouseover="this.style.background='rgba(104,211,145,0.18)'" onmouseout="this.style.background='rgba(104,211,145,0.07)'">
+        💬 Chat Free
+      </a>
+      <a href="${m.apiUrl || '#'}" target="_blank" style="flex:1;display:block;text-align:center;padding:0.55rem;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);background:rgba(99,179,237,0.07);border-radius:3px;text-decoration:none;transition:background 0.15s" onmouseover="this.style.background='rgba(99,179,237,0.18)'" onmouseout="this.style.background='rgba(99,179,237,0.07)'">
+        ⬡ Get API Key
+      </a>
+    </div>
+    ${m.freeVia ? `<div style="font-size:0.68rem;color:var(--accent3);text-align:center;margin-top:0.5rem;letter-spacing:0.05em">Free via: ${m.freeVia}</div>` : ''}
   `;
-
-  const vpW = window.innerWidth;
-  const vpH = window.innerHeight;
-  let left = cx + 16;
-  let top = cy - 10;
-  if (left + 310 > vpW) left = cx - 316;
-  if (top + 440 > vpH) top = vpH - 450;
-  tt.style.left = left + 'px';
-  tt.style.top = Math.max(10, top) + 'px';
-  tt.classList.add('visible');
-  tt.classList.toggle('sticky', locked);
+  card.classList.add('visible');
 }
 
-function hideTooltip() {
-  document.getElementById('tooltip').classList.remove('visible');
+function hideModelCard() {
+  document.getElementById('modelCard').classList.remove('visible');
+  cardVisible = false;
+  clearFadeTimer();
 }
+
+// Legacy tooltip functions (kept for table/modal compatibility)
+function showTooltip() {}
+function hideTooltip() {}
 
 // ============================================================
 // TABLE
@@ -2107,8 +2210,54 @@ window.addEventListener('resize', () => {
 });
 
 // ============================================================
-// INIT
+// BENCHMARK TOOLTIPS
 // ============================================================
+
+const BENCH_DEFS = {
+  intelligence: { name: 'Intelligence Index', desc: 'Composite score combining GPQA, coding, math, agent tasks, and long-context. Weighted aggregate from Artificial Analysis v4.0.', good: '55+ = Frontier tier. Human expert baseline ~72.' },
+  gpqa:         { name: 'GPQA Diamond', desc: 'Graduate-level PhD science questions across biology, chemistry, physics. Designed so only domain experts can reliably answer.', good: '65%+ = frontier. Human expert baseline: 65%. Random chance: 25%.' },
+  mmluPro:      { name: 'MMLU-Pro', desc: 'Massive Multitask Language Understanding — 12,000 questions across 57 academic subjects. Harder version of MMLU with more distractors.', good: '70%+ = strong. Covers law, medicine, STEM, humanities.' },
+  humanEval:    { name: 'HumanEval', desc: 'Python code generation benchmark. Model writes functions from docstrings; tests check correctness automatically.', good: '85%+ = strong. 95%+ = elite coding ability. Pass@1 metric.' },
+  math:         { name: 'MATH-500', desc: 'Competition-level mathematics: algebra, geometry, number theory, combinatorics, calculus. 500 hardest problems from AMC/AIME level competitions.', good: '80%+ = strong. 95%+ = olympiad-level. Chain-of-thought required.' },
+  swe:          { name: 'SWE-bench Verified', desc: 'Real GitHub issues from popular open-source repos. Model must read code, understand the bug, and write a passing fix. Verified subset — human-confirmed solvable.', good: '50%+ = exceptional. Most models score 20–45%. Tests real-world engineering.' },
+  aime:         { name: 'AIME 2025', desc: 'American Invitational Mathematics Examination — elite high-school competition math. Problems require multi-step reasoning with integer answers 0–999.', good: '50%+ = remarkable. Top human competitors score ~70%. Requires deep reasoning chains.' },
+  speed:        { name: 'Output Speed', desc: 'Tokens generated per second under standard load conditions. Measured by Artificial Analysis with consistent methodology across providers.', good: '200+ tok/s = fast. 50 tok/s = slow but often smarter. Speed vs intelligence tradeoff is key.' },
+  context:      { name: 'Context Window', desc: 'Maximum input size in thousands of tokens. ~750 words = 1K tokens. A novel is ~100K tokens.', good: '128K = standard. 1M+ = long-document specialist. Larger isn\'t always better used.' },
+  costPer1M:    { name: 'Cost per 1M Tokens', desc: 'Combined input + output cost per million tokens. Actual cost depends on your input/output ratio.', good: 'Under $1 = very affordable. Over $10 = premium. Free tiers available for many models.' },
+  qualityPerDollar: { name: 'Quality / Dollar', desc: 'Intelligence Index divided by average API cost. The single most useful number for engineers choosing a model for production.', good: 'Higher = better value. Open-source models often win here by a huge margin.' },
+  arenaElo:     { name: 'Chatbot Arena ELO', desc: 'Human preference score from 5M+ blind pairwise comparisons on LMSYS Chatbot Arena. Reflects real-world usefulness across all tasks.', good: '1300+ = very strong. 1350+ = elite. Based on Bradley-Terry model from crowdsourced votes.' },
+};
+
+function showBenchTip(key, el) {
+  const def = BENCH_DEFS[key];
+  if (!def) return;
+  const tip = document.getElementById('benchTip');
+  tip.innerHTML = `<strong>${def.name}</strong>${def.desc}<br><br><em>✓ ${def.good}</em>`;
+  const rect = el.getBoundingClientRect();
+  tip.style.left = rect.left + 'px';
+  tip.style.top = (rect.bottom + 8) + 'px';
+  tip.classList.add('visible');
+}
+
+function hideBenchTip() {
+  document.getElementById('benchTip').classList.remove('visible');
+}
+
+// Add bench tooltips to axis selects
+document.querySelectorAll('#xAxis, #yAxis').forEach(sel => {
+  sel.addEventListener('change', () => {
+    showBenchTip(sel.value, sel);
+    setTimeout(hideBenchTip, 3000);
+  });
+  sel.addEventListener('focus', () => showBenchTip(sel.value, sel));
+  sel.addEventListener('blur', hideBenchTip);
+});
+
+// Add bench tooltips to table headers
+document.querySelectorAll('thead th[data-bench]').forEach(th => {
+  th.addEventListener('mouseenter', e => showBenchTip(th.dataset.bench, th));
+  th.addEventListener('mouseleave', hideBenchTip);
+});
 
 function init() {
   initTimeline();
